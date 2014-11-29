@@ -13,17 +13,19 @@ namespace CaldavConnector
     {
         public Shared.AppointmentSyncCollection GetUpdates(DateTime timestamp)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("GetUpdates CalDav executed at: " + timestamp.ToString() + " from: " + this.GetType().Name);
+            return new Shared.AppointmentSyncCollection();
         }
 
         public Shared.AppointmentSyncCollection GetUpdates()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
+            return new Shared.AppointmentSyncCollection();
         }
 
         public void DoUpdates(Shared.AppointmentSyncCollection syncItems)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Do updates CalDav executed from: " + this.GetType().Name);
         }
     }
 }
