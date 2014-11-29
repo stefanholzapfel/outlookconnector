@@ -17,6 +17,10 @@ namespace OutlookAddIn
         [ImportMany(typeof(ICalendarSyncable))]
         public List<ICalendarSyncable> MefCalendarConnectors { get; set; }
 
+        /// <summary>
+        /// This constrcutor receives the connector to use as an argument.
+        /// </summary>
+        /// <param name="_choosenConnector">Name of the class of the connector you want to use</param>
         public ConnectorHandler(String _choosenConnector)
         {
             choosenConnector = _choosenConnector;
