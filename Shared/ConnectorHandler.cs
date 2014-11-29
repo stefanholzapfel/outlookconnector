@@ -33,10 +33,8 @@ namespace OutlookAddIn
         {
             foreach (var item in MefCalendarConnectors)
             {
-                if (item.GetType().ToString().Equals(choosenConnector))
-                {
+                if (item.GetType().Name.Equals(choosenConnector))
                     return item.GetUpdates(timestamp);
-                }
             }
             return new Shared.AppointmentSyncCollection();
         }
@@ -49,10 +47,8 @@ namespace OutlookAddIn
         {
             foreach (var item in MefCalendarConnectors)
             {
-                if (item.GetType().ToString().Equals(choosenConnector))
-                {
+                if (item.GetType().Name.Equals(choosenConnector))
                     return item.GetUpdates();
-                }
             }
             return new Shared.AppointmentSyncCollection();
         }
@@ -65,10 +61,8 @@ namespace OutlookAddIn
         {
             foreach (var item in MefCalendarConnectors)
             {
-                if (item.GetType().ToString().Equals(choosenConnector))
-                {
+                if (item.GetType().Name.Equals(choosenConnector))
                     item.DoUpdates(syncItems);
-                }
             }
         }
     }

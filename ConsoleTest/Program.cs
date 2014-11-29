@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OutlookAddIn;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
+            ConnectorHandler myHandler = new ConnectorHandler("CaldavConnector");
+            myHandler.GetUpdates(DateTime.UtcNow);
         }
     }
 }
