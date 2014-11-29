@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppointmentItem.cs" />
+    <Compile Include="AppointmentSyncCollection.cs" />
     <Compile Include="Interfaces\ICalendarSyncable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
