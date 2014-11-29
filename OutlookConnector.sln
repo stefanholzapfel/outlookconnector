@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlookAddIn", "OutlookAddI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaldavConnector", "CaldavConnector\CaldavConnector.csproj", "{3924A554-458D-431C-AC31-6E2200171ED3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MEFCalenderConnectors", "MEFCalenderConnectors", "{26159849-8ED4-40B1-BBEB-DC0C58A7F77E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIn", "AddIn", "{98165F62-C40A-4B55-A092-A901499036CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{62477092-21A4-44B2-A9E5-2E604F7A46BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{04A7F31B-24D4-4C96-9623-12419ED39C6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +29,17 @@ Global
 		{3924A554-458D-431C-AC31-6E2200171ED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3924A554-458D-431C-AC31-6E2200171ED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3924A554-458D-431C-AC31-6E2200171ED3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04A7F31B-24D4-4C96-9623-12419ED39C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04A7F31B-24D4-4C96-9623-12419ED39C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04A7F31B-24D4-4C96-9623-12419ED39C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04A7F31B-24D4-4C96-9623-12419ED39C6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6C4A779-A07F-4BAB-A7E2-A85D733971C7} = {98165F62-C40A-4B55-A092-A901499036CF}
+		{3924A554-458D-431C-AC31-6E2200171ED3} = {26159849-8ED4-40B1-BBEB-DC0C58A7F77E}
+		{04A7F31B-24D4-4C96-9623-12419ED39C6B} = {62477092-21A4-44B2-A9E5-2E604F7A46BA}
 	EndGlobalSection
 EndGlobal
