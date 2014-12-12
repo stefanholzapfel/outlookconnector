@@ -46,6 +46,7 @@
     <Compile Include="AppointmentSyncCollection.cs" />
     <Compile Include="ConnectorHandler.cs" />
     <Compile Include="Interfaces\ICalendarSyncable.cs" />
+    <Compile Include="OutlookAppointment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

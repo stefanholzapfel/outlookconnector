@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 using Outlook = Microsoft.Office.Interop.Outlook;
 
-namespace CalendarHandler
+namespace OutlookAddIn
 {
     public class CalendarHandler : ICalendarSyncable
     {
@@ -89,7 +89,18 @@ namespace CalendarHandler
         /// </summary>
         public void DeleteCustomCalendar()
         {
-            throw new NotImplementedException();
+            // calendar does not exist
+            if (_customCalendar == null) return;
+
+            try
+            {
+                _customCalendar.Delete();
+                _customCalendar = null;
+            }
+            catch (Exception ex)
+            {
+               MessageBox.Show("The following error occurred: " + ex.Message);
+            }
         }
 
         public AppointmentSyncCollection GetUpdates(DateTime timestamp)
@@ -110,21 +121,70 @@ namespace CalendarHandler
         /// <summary>
         /// Creates a new appointment in the custom calendar
         /// </summary>
-        private void CreateAppointment(Outlook.AppointmentItem appointment)
+        /// <param name="appointment">new appointment</param>
+        /// <returns>GlobalAppointmentID of appointment in Outlook</returns>
+        public String CreateAppointment(OutlookAppointment appointment)
         {
-            if (_customCalendar == null) return;
+            if (_customCalendar == null || appointment == null) return null;
 
-            Outlook.AppointmentItem newAppointment = _customCalendar.Items.Add(appointment);
-            appointment.Save();
+            Outlook.AppointmentItem newAppointment = (Outlook.AppointmentItem) _customCalendar.Items.Add(Outlook.OlItemType.olAppointmentItem);
+            
+            newAppointment.Subject = appointment.Subject;
+            newAppointment.Body = appointment.Body;
+            newAppointment.Start = appointment.Start;
+            newAppointment.End = appointment.End;
+            newAppointment.ReminderSet = appointment.ReminderSet;
+            newAppointment.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
+            newAppointment.Location = appointment.Location;
+            newAppointment.AllDayEvent = appointment.AllDayEvent;
+
+            if (appointment.Attachments != null)
+                newAppointment.Attachments.Add(appointment.Attachments);
+
+            newAppointment.Duration = appointment.Duration;
+            newAppointment.Importance = appointment.Importance;
+
+            // GlobalAppointmentID must be stored as custom item property as well, because GlobalAppointmentID property cannot be searched for
+            Outlook.ItemProperty newProp = newAppointment.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
+
+            newAppointment.Save();
+          
+            newProp.Value = newAppointment.GlobalAppointmentID;
+            newAppointment.Save();
+
+            return newAppointment.GlobalAppointmentID;
         }
 
         /// <summary>
         /// Deletes the appointment in the custom calendar
         /// </summary>
-        /// <param name="appointment"></param>
-        private void DeleteAppointment(Outlook.AppointmentItem appointment)
+        /// <param name="appointment">appointment to be deleted</param>
+        /// <returns>returns true if successfull</returns>
+        public bool DeleteAppointment(OutlookAppointment appointment)
         {
-            throw new NotImplementedException();
+            if (_customCalendar == null || appointment == null) return false;
+            return DeleteAppointment(appointment.GlobalAppointmentID);
+        }
+
+        /// <summary>
+        /// Deletes the appointment in the custom calendar
+        /// </summary>
+        /// <param name="globalAppointmentID">GlobalAppointmentID of the appointment</param>
+        /// <returns>returns true if successfull</returns>
+        public bool DeleteAppointment(String globalAppointmentID)
+        {
+            if (_customCalendar == null || String.IsNullOrEmpty(globalAppointmentID)) return false;
+
+            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", globalAppointmentID));
+            if (foundItem != null)
+            {
+                foundItem.Delete();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -145,7 +205,7 @@ namespace CalendarHandler
         }
 
         /// <summary>
-        /// Returns a list of appointments in the custom calendar that have been changed since the timeStamp
+        /// Returns a list of appointments in the custom calendar that have been changed since the TimeStamp
         /// </summary>
         /// <param name="timeStamp">time stamp to check against</param>
         /// <returns>list of appointments</returns>
@@ -184,7 +244,7 @@ namespace CalendarHandler
 
             if (MoveTo.Name == deletedFolder.Name)
             {
-                MessageBox.Show("Item deleted");
+                MessageBox.Show("Event: Item deleted");
             }
         }
     }

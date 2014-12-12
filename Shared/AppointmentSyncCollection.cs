@@ -1,5 +1,4 @@
-﻿using Microsoft.Office.Interop.Outlook;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,35 +9,47 @@ namespace Shared
     public class AppointmentSyncCollection
     {
         /// <summary>
-        /// list of appointments that should be added
+        /// List of appointments that should be added
         /// </summary>
-        public List<AppointmentItem> AddList { get; set; }
+        public List<OutlookAppointment> AddList { get; set; }
 
         /// <summary>
-        /// list of appointments that should be updated
+        /// List of appointments that should be updated
         /// </summary>
-        public List<AppointmentItem> UpdateList { get; set; }
+        public List<OutlookAppointment> UpdateList { get; set; }
 
         /// <summary>
-        /// list of appointments that should be deleted
+        /// List of appointments that should be deleted
         /// </summary>
-        public List<AppointmentItem> DeleteList { get; set; }
+        public List<OutlookAppointment> DeleteList { get; set; }
 
-        public void AddAppointment(AppointmentItem item)
+        /// <summary>
+        /// SyncCollection: Add this item when syncing 
+        /// </summary>
+        /// <param name="item">appointment to be added</param>
+        public void AddAppointment(OutlookAppointment item)
         {
-            if (AddList == null) AddList = new List<AppointmentItem>();
+            if (AddList == null) AddList = new List<OutlookAppointment>();
             AddList.Add(item);
         }
 
-        public void UpdateAppointment(AppointmentItem item)
+        /// <summary>
+        ///  SyncCollection: Update this item when syncing 
+        /// </summary>
+        /// <param name="item">appointment to be updated</param>
+        public void UpdateAppointment(OutlookAppointment item)
         {
-            if (UpdateList == null) UpdateList = new List<AppointmentItem>();
+            if (UpdateList == null) UpdateList = new List<OutlookAppointment>();
             UpdateList.Add(item);
         }
 
-        public void DeleteAppointment(AppointmentItem item)
+        /// <summary>
+        ///  SyncCollection: Delete this item when syncing 
+        /// </summary>
+        /// <param name="item">appointment to be deleted</param>
+        public void DeleteAppointment(OutlookAppointment item)
         {
-            if (DeleteList == null) DeleteList = new List<AppointmentItem>();
+            if (DeleteList == null) DeleteList = new List<OutlookAppointment>();
             DeleteList.Add(item);
         }
     }
