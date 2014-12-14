@@ -39,12 +39,12 @@
             this.btn_CreateCalendar = this.Factory.CreateRibbonButton();
             this.btn_DeleteCalendar = this.Factory.CreateRibbonButton();
             this.separator1 = this.Factory.CreateRibbonSeparator();
-            this.btn_CreateAppointment = this.Factory.CreateRibbonButton();
-            this.btn_DeleteAppointment = this.Factory.CreateRibbonButton();
-            this.btn_UpdateAppointment = this.Factory.CreateRibbonButton();
+            this.btn_DoUpdatesSet1 = this.Factory.CreateRibbonButton();
+            this.btn_DoUpdatesSet2 = this.Factory.CreateRibbonButton();
             this.separator2 = this.Factory.CreateRibbonSeparator();
-            this.btn_FullGetUpdates = this.Factory.CreateRibbonButton();
             this.btn_IncrGetUpdates = this.Factory.CreateRibbonButton();
+            this.btn_FullGetUpdates = this.Factory.CreateRibbonButton();
+            this.btn_DoUpdatesSet3 = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             // 
@@ -59,9 +59,9 @@
             this.group1.Items.Add(this.btn_CreateCalendar);
             this.group1.Items.Add(this.btn_DeleteCalendar);
             this.group1.Items.Add(this.separator1);
-            this.group1.Items.Add(this.btn_CreateAppointment);
-            this.group1.Items.Add(this.btn_UpdateAppointment);
-            this.group1.Items.Add(this.btn_DeleteAppointment);
+            this.group1.Items.Add(this.btn_DoUpdatesSet1);
+            this.group1.Items.Add(this.btn_DoUpdatesSet2);
+            this.group1.Items.Add(this.btn_DoUpdatesSet3);
             this.group1.Items.Add(this.separator2);
             this.group1.Items.Add(this.btn_IncrGetUpdates);
             this.group1.Items.Add(this.btn_FullGetUpdates);
@@ -84,27 +84,27 @@
             // 
             this.separator1.Name = "separator1";
             // 
-            // btn_CreateAppointment
+            // btn_DoUpdatesSet1
             // 
-            this.btn_CreateAppointment.Label = "Create Test Appointment";
-            this.btn_CreateAppointment.Name = "btn_CreateAppointment";
-            this.btn_CreateAppointment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_CreateAppointment_Click);
+            this.btn_DoUpdatesSet1.Label = "DoUpdates (Add)";
+            this.btn_DoUpdatesSet1.Name = "btn_DoUpdatesSet1";
+            this.btn_DoUpdatesSet1.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DoUpdatesSet1_Click);
             // 
-            // btn_DeleteAppointment
+            // btn_DoUpdatesSet2
             // 
-            this.btn_DeleteAppointment.Label = "Delete Test Appointment";
-            this.btn_DeleteAppointment.Name = "btn_DeleteAppointment";
-            this.btn_DeleteAppointment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DeleteAppointment_Click);
-            // 
-            // btn_UpdateAppointment
-            // 
-            this.btn_UpdateAppointment.Label = "Update Test Appointment";
-            this.btn_UpdateAppointment.Name = "btn_UpdateAppointment";
-            this.btn_UpdateAppointment.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_UpdateAppointment_Click);
+            this.btn_DoUpdatesSet2.Label = "DoUpdates (Update)";
+            this.btn_DoUpdatesSet2.Name = "btn_DoUpdatesSet2";
+            this.btn_DoUpdatesSet2.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DoUpdatesSet2_Click);
             // 
             // separator2
             // 
             this.separator2.Name = "separator2";
+            // 
+            // btn_IncrGetUpdates
+            // 
+            this.btn_IncrGetUpdates.Label = "Incremental GetUpdates";
+            this.btn_IncrGetUpdates.Name = "btn_IncrGetUpdates";
+            this.btn_IncrGetUpdates.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_IncrGetUpdates_Click);
             // 
             // btn_FullGetUpdates
             // 
@@ -112,11 +112,11 @@
             this.btn_FullGetUpdates.Name = "btn_FullGetUpdates";
             this.btn_FullGetUpdates.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_FullGetUpdates_Click);
             // 
-            // btn_IncrGetUpdates
+            // btn_DoUpdatesSet3
             // 
-            this.btn_IncrGetUpdates.Label = "Incremental GetUpdates";
-            this.btn_IncrGetUpdates.Name = "btn_IncrGetUpdates";
-            this.btn_IncrGetUpdates.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_IncrGetUpdates_Click);
+            this.btn_DoUpdatesSet3.Label = "DoUpdates (Delete)";
+            this.btn_DoUpdatesSet3.Name = "btn_DoUpdatesSet3";
+            this.btn_DoUpdatesSet3.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DoUpdatesSet3_Click);
             // 
             // SyncRibbon
             // 
@@ -137,13 +137,13 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_CreateCalendar;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DeleteCalendar;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_CreateAppointment;
         internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DeleteAppointment;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_UpdateAppointment;
         internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator2;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_FullGetUpdates;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_IncrGetUpdates;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DoUpdatesSet1;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DoUpdatesSet2;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DoUpdatesSet3;
     }
 
     partial class ThisRibbonCollection

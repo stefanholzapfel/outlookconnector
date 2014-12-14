@@ -32,7 +32,23 @@ namespace OutlookAddIn
             _calHandler.DeleteCustomCalendar();
         }
 
-        private void btn_CreateAppointment_Click(object sender, RibbonControlEventArgs e)
+        private void btn_FullGetUpdates_Click(object sender, RibbonControlEventArgs e)
+        {
+            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates();
+            if (syncCollection != null)
+                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
+        }
+
+        private void btn_IncrGetUpdates_Click(object sender, RibbonControlEventArgs e)
+        {
+            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates(_syncTime);
+            if (syncCollection != null)
+                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
+
+            _syncTime = DateTime.Now;
+        }
+
+        private void btn_DoUpdatesSet1_Click(object sender, RibbonControlEventArgs e)
         {
             OutlookAppointment newAppointment = new OutlookAppointment();
 
@@ -43,22 +59,13 @@ namespace OutlookAddIn
             newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
             newAppointment.ReminderSet = false;
 
-            _appointmentID = _calHandler.CreateAppointment(newAppointment);
-            //MessageBox.Show("New ID: " + _appointmentID);
+            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
+            syncCollection.AddList.Add(newAppointment);
+
+            _calHandler.DoUpdates(syncCollection);
         }
 
-        private void btn_DeleteAppointment_Click(object sender, RibbonControlEventArgs e)
-        {
-            if (String.IsNullOrEmpty(_appointmentID))
-            {
-                MessageBox.Show("No ID for appointment provided");
-                return;
-            }
-
-            _calHandler.DeleteAppointment(_appointmentID);
-        }
-
-        private void btn_UpdateAppointment_Click(object sender, RibbonControlEventArgs e)
+        private void btn_DoUpdatesSet2_Click(object sender, RibbonControlEventArgs e)
         {
             if (String.IsNullOrEmpty(_appointmentID))
             {
@@ -76,23 +83,27 @@ namespace OutlookAddIn
             updateAppointment.Importance = Outlook.OlImportance.olImportanceHigh;
             updateAppointment.ReminderSet = false;
 
-            _calHandler.UpdateAppointment(updateAppointment);
+            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
+            syncCollection.UpdateList.Add(updateAppointment);
+
+            _calHandler.DoUpdates(syncCollection);
         }
 
-        private void btn_FullGetUpdates_Click(object sender, RibbonControlEventArgs e)
+        private void btn_DoUpdatesSet3_Click(object sender, RibbonControlEventArgs e)
         {
-            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates();
-            if (syncCollection != null)
-                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
-        }
+            if (String.IsNullOrEmpty(_appointmentID))
+            {
+                MessageBox.Show("No ID for appointment provided");
+                return;
+            }
 
-        private void btn_IncrGetUpdates_Click(object sender, RibbonControlEventArgs e)
-        {
-            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates(_syncTime);
-            if (syncCollection != null)
-                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
+            OutlookAppointment deleteAppointment = new OutlookAppointment();
+            deleteAppointment.GlobalAppointmentID = _appointmentID;
 
-            _syncTime = DateTime.Now;
+            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
+            syncCollection.DeleteList.Add(deleteAppointment);
+
+            _calHandler.DoUpdates(syncCollection);
         }
     }
 }

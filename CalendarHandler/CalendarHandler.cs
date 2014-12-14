@@ -195,7 +195,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <param name="appointment">new appointment</param>
         /// <returns>GlobalAppointmentID of appointment in Outlook</returns>
-        public String CreateAppointment(OutlookAppointment appointment)
+        private String CreateAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return null;
 
@@ -232,7 +232,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <param name="appointment">appointment to be deleted</param>
         /// <returns>returns true if successfull</returns>
-        public bool DeleteAppointment(OutlookAppointment appointment)
+        private bool DeleteAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return false;
             return DeleteAppointment(appointment.GlobalAppointmentID);
@@ -243,7 +243,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <param name="globalAppointmentID">GlobalAppointmentID of the appointment</param>
         /// <returns>returns true if successfull</returns>
-        public bool DeleteAppointment(String globalAppointmentID)
+        private bool DeleteAppointment(String globalAppointmentID)
         {
             if (_customCalendar == null || String.IsNullOrEmpty(globalAppointmentID)) return false;
 
@@ -264,7 +264,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <param name="appointment"></param>
         /// <returns></returns>
-        public bool UpdateAppointment(OutlookAppointment appointment)
+        private bool UpdateAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return false;
 
