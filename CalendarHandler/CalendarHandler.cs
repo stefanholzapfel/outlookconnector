@@ -17,6 +17,8 @@ namespace OutlookAddIn
         private Outlook.MAPIFolder _primaryCalendar;
         private Outlook.MAPIFolder _customCalendar;
 
+        private List<String> _tempDeleteStorage = new List<string>();
+
         // TODO: to be retrieved from configuration
         private const String CALENDAR_NAME = "Caldav Calendar";
 
@@ -105,17 +107,87 @@ namespace OutlookAddIn
 
         public AppointmentSyncCollection GetUpdates(DateTime timestamp)
         {
-            throw new NotImplementedException();
+            if (_customCalendar == null) return null;
+            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
+            
+            // adding and updating
+            foreach (Outlook.AppointmentItem item in GetAppointments(timestamp)) {
+
+                // if GAI does not exist, it is not yet synced and needs to be added
+                if (item.ItemProperties["GAI"] == null)
+                {
+                    syncCollection.AddList.Add(new OutlookAppointment(item));
+
+                    // creating new custom item property, also marking it as "synced" this way
+                    Outlook.ItemProperty newProp = item.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
+                    item.Save();
+                    newProp.Value = item.GlobalAppointmentID;
+                    item.Save();
+                }
+                // if GAI does exist, it is already synced and needs to be updated
+                else
+                {
+                    syncCollection.UpdateList.Add(new OutlookAppointment(item));
+                }
+            }
+
+            // deleting
+            foreach (String appointmentID in GetAppointmentsForDeleting())
+            {
+                OutlookAppointment item = new OutlookAppointment();
+                item.GlobalAppointmentID = appointmentID;
+                syncCollection.DeleteList.Add(item);
+            }
+
+            ClearDeleteStorage();
+
+            return syncCollection;
         }
 
         public AppointmentSyncCollection GetUpdates()
         {
-            throw new NotImplementedException();
+            if (_customCalendar == null) return null;
+            AppointmentSyncCollection syncCollection = GetUpdates(DateTime.MinValue);
+
+            // this is a request for a full update, so there are no "updates" or "delete", but only "adds"
+            syncCollection.AddList.AddRange(syncCollection.UpdateList);
+            syncCollection.UpdateList.Clear();
+            syncCollection.DeleteList.Clear();
+
+            return syncCollection;
         }
 
+        // TODO: Test this
         public void DoUpdates(AppointmentSyncCollection syncItems)
         {
-            throw new NotImplementedException();
+            if (syncItems == null || _customCalendar == null) return;
+
+            // add new appointments
+            if (syncItems.AddList != null)
+            {
+                foreach (OutlookAppointment appointment in syncItems.AddList)
+                {
+                    CreateAppointment(appointment);
+                }
+            }
+
+            // update appointments
+            if (syncItems.UpdateList != null)
+            {
+                foreach (OutlookAppointment appointment in syncItems.UpdateList)
+                {
+                    UpdateAppointment(appointment);
+                }
+            }
+
+            // delete appointments
+            if (syncItems.DeleteList != null)
+            {
+                foreach (OutlookAppointment appointment in syncItems.DeleteList)
+                {
+                    DeleteAppointment(appointment);
+                }
+            }
         }
 
         /// <summary>
@@ -188,11 +260,51 @@ namespace OutlookAddIn
         }
 
         /// <summary>
+        /// Updates an appointment in the custom calendar
+        /// </summary>
+        /// <param name="appointment"></param>
+        /// <returns></returns>
+        public bool UpdateAppointment(OutlookAppointment appointment)
+        {
+            if (_customCalendar == null || appointment == null) return false;
+
+            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", appointment.GlobalAppointmentID));
+            if (foundItem != null)
+            {
+                foundItem.Subject = appointment.Subject;
+                foundItem.Body = appointment.Body;
+                foundItem.Start = appointment.Start;
+                foundItem.End = appointment.End;
+                foundItem.ReminderSet = appointment.ReminderSet;
+                foundItem.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
+                foundItem.Location = appointment.Location;
+                foundItem.AllDayEvent = appointment.AllDayEvent;
+
+                if (appointment.Attachments != null)
+                    foundItem.Attachments.Add(appointment.Attachments);
+
+                foundItem.Duration = appointment.Duration;
+                foundItem.Importance = appointment.Importance;
+
+                foundItem.Save();
+
+                return true;
+            }
+            // couldn't find the appointment
+            // TODO: adding as new?
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Returns a list of all appointments in the custom calendar
         /// </summary>
         /// <returns>list of appointments</returns>
-        private List<Outlook.AppointmentItem> GetAllAppointments()
+        private List<Outlook.AppointmentItem> GetAppointments()
         {
+            /*
             if (_customCalendar == null) return null;
 
             List<Outlook.AppointmentItem> returnList = new List<Outlook.AppointmentItem>();
@@ -202,6 +314,9 @@ namespace OutlookAddIn
             }
 
             return returnList;
+             */
+
+            return GetAppointments(DateTime.MinValue);
         }
 
         /// <summary>
@@ -209,7 +324,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <param name="timeStamp">time stamp to check against</param>
         /// <returns>list of appointments</returns>
-        private List<Outlook.AppointmentItem> GetAllAppointments(DateTime timeStamp)
+        private List<Outlook.AppointmentItem> GetAppointments(DateTime timeStamp)
         {
             if (_customCalendar == null) return null;
 
@@ -220,6 +335,33 @@ namespace OutlookAddIn
             }
 
             return returnList;
+        }
+
+        /// <summary>
+        /// Returns a list of all appointment IDs that have been deleted
+        /// </summary>
+        /// <returns>list of GlobalAppointmentIDs</returns>
+        private List<String> GetAppointmentsForDeleting()
+        {
+            return _tempDeleteStorage;
+        }
+
+        /// <summary>
+        /// Saves an item in the Delete Storage
+        /// </summary>
+        /// <param name="item"></param>
+        private void AddItemToDeleteStorage(Outlook.AppointmentItem item)
+        {
+            if (item == null) return;
+            _tempDeleteStorage.Add(item.GlobalAppointmentID);
+        }
+
+        /// <summary>
+        /// Resets the Delete Storage
+        /// </summary>
+        private void ClearDeleteStorage()
+        {
+            _tempDeleteStorage.Clear();
         }
 
         /// <summary>
@@ -235,7 +377,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Executed before an item is moved in Outlook, and checks if the item is deleted (moved to Trash)
+        /// Executed before an item is moved within Outlook, and checks if the item is deleted (moved to Trash)
         /// </summary>
         private void events_BeforeItemMove(object Item, Outlook.MAPIFolder MoveTo, ref bool Cancel)
         {
@@ -244,7 +386,8 @@ namespace OutlookAddIn
 
             if (MoveTo.Name == deletedFolder.Name)
             {
-                MessageBox.Show("Event: Item deleted");
+                AddItemToDeleteStorage(item);
+                //MessageBox.Show("Event: Item deleted");
             }
         }
     }

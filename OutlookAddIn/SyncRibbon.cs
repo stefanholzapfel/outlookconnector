@@ -15,6 +15,7 @@ namespace OutlookAddIn
     {
         CalendarHandler _calHandler;
         String _appointmentID;
+        DateTime _syncTime = DateTime.Now;
 
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {
@@ -43,7 +44,7 @@ namespace OutlookAddIn
             newAppointment.ReminderSet = false;
 
             _appointmentID = _calHandler.CreateAppointment(newAppointment);
-            MessageBox.Show("New ID: " + _appointmentID);
+            //MessageBox.Show("New ID: " + _appointmentID);
         }
 
         private void btn_DeleteAppointment_Click(object sender, RibbonControlEventArgs e)
@@ -53,7 +54,45 @@ namespace OutlookAddIn
                 MessageBox.Show("No ID for appointment provided");
                 return;
             }
+
             _calHandler.DeleteAppointment(_appointmentID);
+        }
+
+        private void btn_UpdateAppointment_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (String.IsNullOrEmpty(_appointmentID))
+            {
+                MessageBox.Show("No ID for appointment provided");
+                return;
+            }
+
+            OutlookAppointment updateAppointment = new OutlookAppointment();
+
+            updateAppointment.GlobalAppointmentID = _appointmentID;
+            updateAppointment.Subject = "Test Appointment 2";
+            updateAppointment.Body = "Testing the CalendarHandler, v2";
+            updateAppointment.Start = DateTime.Now.AddDays(-1);
+            updateAppointment.End = DateTime.Now.AddDays(-1);
+            updateAppointment.Importance = Outlook.OlImportance.olImportanceHigh;
+            updateAppointment.ReminderSet = false;
+
+            _calHandler.UpdateAppointment(updateAppointment);
+        }
+
+        private void btn_FullGetUpdates_Click(object sender, RibbonControlEventArgs e)
+        {
+            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates();
+            if (syncCollection != null)
+                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
+        }
+
+        private void btn_IncrGetUpdates_Click(object sender, RibbonControlEventArgs e)
+        {
+            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates(_syncTime);
+            if (syncCollection != null)
+                MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
+
+            _syncTime = DateTime.Now;
         }
     }
 }

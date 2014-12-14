@@ -33,7 +33,6 @@ namespace Shared
                 if (Start != null && _end != null) _duration = (_end - Start).Minutes;
             }
         }
-        
 
         //public DateTime EndUTC { get; set; }
         
@@ -57,7 +56,6 @@ namespace Shared
             get { return _duration; }
 
         }
-        
         
         public OlImportance Importance { get; set; }
         
