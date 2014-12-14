@@ -23,6 +23,14 @@ namespace Shared
         /// </summary>
         public List<OutlookAppointment> DeleteList { get; set; }
 
+        public AppointmentSyncCollection()
+        {
+            AddList = new List<OutlookAppointment>();
+            UpdateList = new List<OutlookAppointment>();
+            DeleteList = new List<OutlookAppointment>();
+        }
+
+        /*
         /// <summary>
         /// SyncCollection: Add this item when syncing 
         /// </summary>
@@ -52,5 +60,6 @@ namespace Shared
             if (DeleteList == null) DeleteList = new List<OutlookAppointment>();
             DeleteList.Add(item);
         }
+        */
     }
 }
