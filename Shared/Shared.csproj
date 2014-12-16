@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppointmentSyncCollection.cs" />
+    <Compile Include="ConnectorSettings.cs" />
     <Compile Include="ConnectorHandler.cs" />
     <Compile Include="Interfaces\ICalendarSyncable.cs" />
     <Compile Include="OutlookAppointment.cs" />
