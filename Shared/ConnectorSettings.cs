@@ -12,7 +12,7 @@ namespace Shared
 
         public String Password { get; set; }
 
-        public String ConnectionString { get; set; }
+        public String CalendarUrl { get; set; }
 
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Net;
 using System.Text;
+using Shared;
 using System.Threading.Tasks;
 
 namespace CaldavConnector
@@ -14,21 +15,10 @@ namespace CaldavConnector
     {
         private static String _name = "CaldavConnector";
 
-        public Shared.AppointmentSyncCollection GetUpdates(DateTime timestamp)
-        {
-            Console.WriteLine("GetUpdates CalDav executed at: " + timestamp.ToString() + " from: " + this.GetType().Name);
-            return new Shared.AppointmentSyncCollection();
-        }
-
-        public Shared.AppointmentSyncCollection GetUpdates()
+        public AppointmentSyncCollection GetUpdates()
         {
             Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
             return new Shared.AppointmentSyncCollection();
-        }
-
-        public void DoUpdates(Shared.AppointmentSyncCollection syncItems)
-        {
-            Console.WriteLine("Do updates CalDav executed from: " + this.GetType().Name);
         }
 
         public void Test()
@@ -56,7 +46,7 @@ namespace CaldavConnector
            "</C:calendar-query>";
 
             HttpWebRequest ReportRequest = (HttpWebRequest)WebRequest.Create(uri);
-            ReportRequest.Method = "REQUEST";
+            ReportRequest.Method = "REPORT";
             ReportRequest.Credentials = new NetworkCredential(uName, uPasswd);
             ReportRequest.PreAuthenticate = true;
             ReportRequest.Headers = headers;
@@ -81,12 +71,17 @@ namespace CaldavConnector
             get { return CaldavConnector._name; }
         }
 
-        public Shared.AppointmentSyncCollection GetInitialSync()
+        public AppointmentSyncCollection GetInitialSync()
         {
             throw new NotImplementedException();
         }
 
-        Dictionary<string, string> ICalendarSyncable.DoUpdates(Shared.AppointmentSyncCollection syncItems)
+        public ConnectorSettings Settings
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
         {
             throw new NotImplementedException();
         }
