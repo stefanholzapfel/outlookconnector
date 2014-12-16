@@ -18,29 +18,53 @@ namespace OutlookAddIn
         public List<ICalendarSyncable> MefCalendarConnectors { get; set; }
 
         /// <summary>
-        /// This constrcutor receives the connector to use as an argument.
+        /// This constrcutor builds a blank ConnectorHandler to be capable of returning a list of available connectors via GetAvailableConnectors()
         /// </summary>
-        /// <param name="_choosenConnector">Name of the class of the connector you want to use</param>
-        public ConnectorHandler(String _choosenConnector)
+        public ConnectorHandler()
         {
-            choosenConnector = _choosenConnector;
+            choosenConnector = null;
             var catalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
         }
+
+        /// <summary>
+        /// Return all available connectors
+        /// </summary>
+        /// <param name="timestamp"></param>
+        /// <returns>List with the names of all available connectors</returns>
+        public List<String> GetAvailableConnectors()
+        {
+            List<String> availableConnectors = new List<String>();
+            foreach (var item in MefCalendarConnectors)
+            {
+                availableConnectors.Add(item.ConnectorName);
+            }
+            return availableConnectors;
+        }
+
+        /// <summary>
+        /// Choose a connector to use for sync methods
+        /// </summary>
+        /// <param name="_choosenConnector">Name of connector to choose</param>
+        public void ChooseConnector(String _choosenConnector)
+        {
+            choosenConnector = _choosenConnector;
+        }
+
         /// <summary>
         /// Selects the choosen connector and executes its GetUpdates(DateTime timestamp) method.
         /// </summary>
         /// <param name="timestamp"></param>
         /// <returns></returns>
-        public Shared.AppointmentSyncCollection GetUpdates(DateTime timestamp)
+        public Shared.AppointmentSyncCollection GetInitialSync()
         {
             foreach (var item in MefCalendarConnectors)
             {
                 if (item.GetType().Name.Equals(choosenConnector))
-                    return item.GetUpdates(timestamp);
+                    return item.GetInitialSync();
             }
-            return new Shared.AppointmentSyncCollection();
+            return null;
         }
 
         /// <summary>
@@ -54,35 +78,37 @@ namespace OutlookAddIn
                 if (item.GetType().Name.Equals(choosenConnector))
                     return item.GetUpdates();
             }
-            return new Shared.AppointmentSyncCollection();
+            return null;
         }
 
         /// <summary>
         /// Selects the choosen connector and executes its DoUpdates(AppointmentSyncCollection syncItems) method.
         /// </summary>
         /// <param name="syncItems"></param>
-        public void DoUpdates(Shared.AppointmentSyncCollection syncItems)
+        Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
         {
             foreach (var item in MefCalendarConnectors)
             {
                 if (item.GetType().Name.Equals(choosenConnector))
-                    item.DoUpdates(syncItems);
+                    return item.DoUpdates(syncItems);
             }
+            return null;
         }
 
         public string ConnectorName
         {
-            get { throw new NotImplementedException(); }
+            get { return choosenConnector; }
         }
 
-        public Shared.AppointmentSyncCollection GetInitialSync()
+        public Shared.ConnectorSettings Settings
         {
-            throw new NotImplementedException();
-        }
-
-        Dictionary<string, string> ICalendarSyncable.DoUpdates(Shared.AppointmentSyncCollection syncItems)
-        {
-            throw new NotImplementedException();
+            set {
+                foreach (var item in MefCalendarConnectors)
+                {
+                    if (item.GetType().Name.Equals(choosenConnector))
+                    item.Settings = value;
+                }
+            }
         }
     }
 }
