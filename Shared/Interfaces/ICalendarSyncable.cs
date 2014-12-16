@@ -14,7 +14,7 @@ namespace Shared.Interfaces
 
         String ConnectorName { get; }
 
-        void SetSettings(ConnectorSettings settings);
+        ConnectorSettings Settings { set; }
 
         /// <summary>
         /// returns the full calendar
