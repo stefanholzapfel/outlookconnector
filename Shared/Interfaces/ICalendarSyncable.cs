@@ -11,23 +11,23 @@ namespace Shared.Interfaces
     /// </summary>
     public interface ICalendarSyncable
     {
-        /// <summary>
-        /// returns the updates in the calendar since the given timestamp
-        /// </summary>
-        /// <param name="timestamp">since when the changes should be returned</param>
-        /// <returns>appointments that have been added/updated/deleted in the respective collection of the AppointmentSyncCollection</returns>
-        AppointmentSyncCollection GetUpdates(DateTime timestamp);
-
+        
         /// <summary>
         /// returns the full calendar
         /// </summary>
-        /// <returns>all appointments as 'add'</returns>
+        /// <returns>appointments that have been added/updated/deleted in the respective collection of the AppointmentSyncCollection</returns>
         AppointmentSyncCollection GetUpdates();
 
         /// <summary>
-        /// applies the updates to the calendar
+        /// initializes the connector and returns the full connected calendar
+        /// </summary>
+        /// <returns>returns AppointmentSyncCollection with all calendar items</returns>
+        AppointmentSyncCollection GetInitialSync();
+
+        /// <summary>
+        /// applies the updates to the calendar and returns a key value pair with GlobalAppointmentID -> SyncID
         /// </summary>
         /// <param name="syncItems">appointments to be added/updated/deleted</param>
-        void DoUpdates(AppointmentSyncCollection syncItems);
+        Dictionary<String, String> DoUpdates(AppointmentSyncCollection syncItems);
     }
 }
