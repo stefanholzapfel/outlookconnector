@@ -1,9 +1,10 @@
-﻿using Microsoft.Office.Interop.Outlook;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Shared
 {
@@ -45,8 +46,8 @@ namespace Shared
         public String Location { get; set; }
         
         public bool AllDayEvent { get; set; }
-        
-        public Attachments Attachments { get; set; }
+
+        public Outlook.Attachments Attachments { get; set; }
         
         public DateTime CreationTime { get; set; }
         
@@ -58,8 +59,8 @@ namespace Shared
             get { return _duration; }
 
         }
-        
-        public OlImportance Importance { get; set; }
+
+        public Outlook.OlImportance Importance { get; set; }
         
         //public bool IsRecurring { get; set; }
 
@@ -76,7 +77,7 @@ namespace Shared
         /// Creates an appointment, as a copy from an Outlook.AppointmentItem
         /// </summary>
         /// <param name="item"></param>
-        public OutlookAppointment(AppointmentItem item)
+        public OutlookAppointment(Outlook.AppointmentItem item)
         {
             this.GlobalAppointmentID = item.GlobalAppointmentID;
             this.Subject = item.Subject;
