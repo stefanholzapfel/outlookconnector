@@ -12,11 +12,7 @@ namespace Shared.Interfaces
     public interface ICalendarSyncable
     {
 
-        private String _connectorName;
-        public String ConnectorName
-        {
-            get { return _connectorName; }
-        }
+        String ConnectorName { get; }
         
         /// <summary>
         /// returns the full calendar

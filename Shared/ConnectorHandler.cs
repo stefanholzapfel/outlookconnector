@@ -69,5 +69,20 @@ namespace OutlookAddIn
                     item.DoUpdates(syncItems);
             }
         }
+
+        public string ConnectorName
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Shared.AppointmentSyncCollection GetInitialSync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Dictionary<string, string> ICalendarSyncable.DoUpdates(Shared.AppointmentSyncCollection syncItems)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

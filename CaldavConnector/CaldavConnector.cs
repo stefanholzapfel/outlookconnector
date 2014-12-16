@@ -12,6 +12,8 @@ namespace CaldavConnector
     [Export(typeof(ICalendarSyncable))]
     public class CaldavConnector : ICalendarSyncable
     {
+        private static String _name = "CaldavConnector";
+
         public Shared.AppointmentSyncCollection GetUpdates(DateTime timestamp)
         {
             Console.WriteLine("GetUpdates CalDav executed at: " + timestamp.ToString() + " from: " + this.GetType().Name);
@@ -72,6 +74,21 @@ namespace CaldavConnector
 
             ResponseXmlDoc = new System.Xml.XmlDocument();
             ResponseXmlDoc.Load(ResponseStream);
+        }
+
+        public string ConnectorName
+        {
+            get { return CaldavConnector._name; }
+        }
+
+        public Shared.AppointmentSyncCollection GetInitialSync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Dictionary<string, string> ICalendarSyncable.DoUpdates(Shared.AppointmentSyncCollection syncItems)
+        {
+            throw new NotImplementedException();
         }
     }
 }
