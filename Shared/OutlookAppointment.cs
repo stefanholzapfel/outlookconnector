@@ -11,6 +11,8 @@ namespace Shared
     {
         #region Properties
 
+        public String SyncID { get; set; }
+
         public String GlobalAppointmentID { get; set; }
 
         public String Subject { get; set; }
