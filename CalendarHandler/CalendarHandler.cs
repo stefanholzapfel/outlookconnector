@@ -17,10 +17,23 @@ namespace OutlookAddIn
         private Outlook.MAPIFolder _primaryCalendar;
         private Outlook.MAPIFolder _customCalendar;
 
+        // TODO: to be retrieved from local storage
         private List<String> _tempDeleteStorage = new List<string>();
+        private DateTime _tempLastSyncTime = DateTime.MinValue;
 
         // TODO: to be retrieved from configuration
         private const String CALENDAR_NAME = "Caldav Calendar";
+
+        public String ConnectorName
+        {
+            get { return CALENDAR_NAME; }
+        }
+
+        public ConnectorSettings Settings
+        {
+            // the interface to Outlook does not require this
+            set { }
+        }
 
         /// <summary>
         /// Initializes the CalendarHandler
@@ -57,7 +70,6 @@ namespace OutlookAddIn
         /// </summary>
         public void CreateCustomCalendar()
         {
-            // calendar already exists
             if (_customCalendar != null) return;
 
             try
@@ -91,7 +103,6 @@ namespace OutlookAddIn
         /// </summary>
         public void DeleteCustomCalendar()
         {
-            // calendar does not exist
             if (_customCalendar == null) return;
 
             try
@@ -101,55 +112,20 @@ namespace OutlookAddIn
             }
             catch (Exception ex)
             {
-               MessageBox.Show("The following error occurred: " + ex.Message);
+                MessageBox.Show("The following error occurred: " + ex.Message);
             }
         }
 
-        public AppointmentSyncCollection GetUpdates(DateTime timestamp)
-        {
-            if (_customCalendar == null) return null;
-            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
-            
-            // adding and updating
-            foreach (Outlook.AppointmentItem item in GetAppointments(timestamp)) {
-
-                // if GAI does not exist, it is not yet synced and needs to be added
-                if (item.ItemProperties["GAI"] == null)
-                {
-                    syncCollection.AddList.Add(new OutlookAppointment(item));
-
-                    // creating new custom item property, also marking it as "synced" this way
-                    Outlook.ItemProperty newProp = item.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
-                    item.Save();
-                    newProp.Value = item.GlobalAppointmentID;
-                    item.Save();
-                }
-                // if GAI does exist, it is already synced and needs to be updated
-                else
-                {
-                    syncCollection.UpdateList.Add(new OutlookAppointment(item));
-                }
-            }
-
-            // deleting
-            foreach (String appointmentID in GetAppointmentsForDeleting())
-            {
-                OutlookAppointment item = new OutlookAppointment();
-                item.GlobalAppointmentID = appointmentID;
-                syncCollection.DeleteList.Add(item);
-            }
-
-            ClearDeleteStorage();
-
-            return syncCollection;
-        }
-
-        public AppointmentSyncCollection GetUpdates()
+        /// <summary>
+        /// Returns an AppointmentSyncCollection of the full calendar
+        /// </summary>
+        /// <returns>AppointmentSyncCollection, with all appointments as "add"</returns>
+        public AppointmentSyncCollection GetInitialSync()
         {
             if (_customCalendar == null) return null;
             AppointmentSyncCollection syncCollection = GetUpdates(DateTime.MinValue);
 
-            // this is a request for a full update, so there are no "updates" or "delete", but only "adds"
+            // this is a request for a full inital sync, so there are no "updates" or "delete", but only "adds"
             syncCollection.AddList.AddRange(syncCollection.UpdateList);
             syncCollection.UpdateList.Clear();
             syncCollection.DeleteList.Clear();
@@ -157,10 +133,73 @@ namespace OutlookAddIn
             return syncCollection;
         }
 
-        // TODO: Test this
-        public void DoUpdates(AppointmentSyncCollection syncItems)
+        /// <summary>
+        /// Returns a AppointmentSyncCollection, with all updates since the last request
+        /// </summary>
+        /// <returns></returns>
+        public AppointmentSyncCollection GetUpdates()
         {
-            if (syncItems == null || _customCalendar == null) return;
+            return GetUpdates(GetLastSyncTime());
+        }
+
+        /// <summary>
+        /// Returns a AppointmentSyncCollection, with all updates since the specified timestamp
+        /// </summary>
+        /// <param name="timestamp"></param>
+        /// <returns></returns>
+        private AppointmentSyncCollection GetUpdates(DateTime timestamp)
+        {
+            if (_customCalendar == null) return null;
+            AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
+
+            foreach (Outlook.AppointmentItem item in _customCalendar.Items)
+            {
+                if (item.LastModificationTime > timestamp)
+                {
+                    // ADDING
+                    // if SyncID does not exist, it is not yet synced and needs to be added
+                    if (item.ItemProperties["SyncID"] == null)
+                    {
+                        syncCollection.AddList.Add(new OutlookAppointment(item));
+
+                        // GAI (GlobalAppointmentID) needs to be added as item property, otherwise it cannot be found later
+                        Outlook.ItemProperty newProp = item.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
+                        item.Save();
+                        newProp.Value = item.GlobalAppointmentID;
+                        item.Save();
+                    }
+
+                    // UPDATING
+                    // if a SyncID exist, it is already synced and needs to be updated
+                    else
+                    {
+                        syncCollection.UpdateList.Add(new OutlookAppointment(item));
+                    }
+                }
+            }
+
+            // DELETING
+            foreach (String syncID in GetAppointmentsForDeleting())
+            {
+                OutlookAppointment item = new OutlookAppointment();
+                item.SyncID = syncID;
+                syncCollection.DeleteList.Add(item);
+            }
+
+            ResetDeleteStorage();
+            SetSyncTime(DateTime.Now);
+
+            return syncCollection;
+        }
+
+        /// <summary>
+        /// Applies all the updates to the calendar
+        /// </summary>
+        /// <param name="syncItems"></param>
+        /// <returns>null</returns>
+        public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
+        {
+            if (syncItems == null || _customCalendar == null) return null;
 
             // add new appointments
             if (syncItems.AddList != null)
@@ -188,19 +227,41 @@ namespace OutlookAddIn
                     DeleteAppointment(appointment);
                 }
             }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Updates the appointments (GlobalAppointmentID) with new SyncIDs
+        /// </summary>
+        /// <param name="idMapping">GlobalAppointmentID -> SyncID</param>
+        public void UpdateSyncIDs(Dictionary<string, string> idMapping)
+        {
+            foreach (KeyValuePair<string, string> entry in idMapping)
+            {
+                Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", entry.Key));
+
+                if (foundItem.ItemProperties["SyncID"] == null) { 
+                    foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
+                    foundItem.Save();
+                }
+
+                foundItem.ItemProperties["SyncID"].Value = entry.Value;
+                foundItem.Save();
+            }
         }
 
         /// <summary>
         /// Creates a new appointment in the custom calendar
         /// </summary>
         /// <param name="appointment">new appointment</param>
-        /// <returns>GlobalAppointmentID of appointment in Outlook</returns>
+        /// <returns>GlobalAppointmentID of the new appointment in Outlook</returns>
         private String CreateAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return null;
 
-            Outlook.AppointmentItem newAppointment = (Outlook.AppointmentItem) _customCalendar.Items.Add(Outlook.OlItemType.olAppointmentItem);
-            
+            Outlook.AppointmentItem newAppointment = (Outlook.AppointmentItem)_customCalendar.Items.Add(Outlook.OlItemType.olAppointmentItem);
+
             newAppointment.Subject = appointment.Subject;
             newAppointment.Body = appointment.Body;
             newAppointment.Start = appointment.Start;
@@ -217,11 +278,14 @@ namespace OutlookAddIn
             newAppointment.Importance = appointment.Importance;
 
             // GlobalAppointmentID must be stored as custom item property as well, because GlobalAppointmentID property cannot be searched for
-            Outlook.ItemProperty newProp = newAppointment.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
+            newAppointment.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
+            newAppointment.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
 
             newAppointment.Save();
-          
-            newProp.Value = newAppointment.GlobalAppointmentID;
+
+            newAppointment.ItemProperties["GAI"].Value = newAppointment.GlobalAppointmentID;
+            newAppointment.ItemProperties["SyncID"].Value = appointment.SyncID;
+
             newAppointment.Save();
 
             return newAppointment.GlobalAppointmentID;
@@ -235,19 +299,19 @@ namespace OutlookAddIn
         private bool DeleteAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return false;
-            return DeleteAppointment(appointment.GlobalAppointmentID);
+            return DeleteAppointment(appointment.SyncID);
         }
 
         /// <summary>
         /// Deletes the appointment in the custom calendar
         /// </summary>
-        /// <param name="globalAppointmentID">GlobalAppointmentID of the appointment</param>
+        /// <param name="syncID">SyncID of the appointment</param>
         /// <returns>returns true if successfull</returns>
-        private bool DeleteAppointment(String globalAppointmentID)
+        private bool DeleteAppointment(String syncID)
         {
-            if (_customCalendar == null || String.IsNullOrEmpty(globalAppointmentID)) return false;
+            if (_customCalendar == null || String.IsNullOrEmpty(syncID)) return false;
 
-            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", globalAppointmentID));
+            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[SyncID] = '{0}'", syncID));
             if (foundItem != null)
             {
                 foundItem.Delete();
@@ -267,8 +331,13 @@ namespace OutlookAddIn
         private bool UpdateAppointment(OutlookAppointment appointment)
         {
             if (_customCalendar == null || appointment == null) return false;
+            Outlook.AppointmentItem foundItem;
 
-            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", appointment.GlobalAppointmentID));
+            foundItem = _customCalendar.Items.Find(String.Format("[SyncID] = '{0}'", appointment.SyncID));
+
+            if (foundItem == null)
+                foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", appointment.GlobalAppointmentID));
+
             if (foundItem != null)
             {
                 foundItem.Subject = appointment.Subject;
@@ -286,61 +355,27 @@ namespace OutlookAddIn
                 foundItem.Duration = appointment.Duration;
                 foundItem.Importance = appointment.Importance;
 
+                if (foundItem.ItemProperties["SyncID"] == null)
+                    foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
+
+                foundItem.Save();
+
+                foundItem.ItemProperties["SyncID"].Value = appointment.SyncID;
+
                 foundItem.Save();
 
                 return true;
             }
+
             // couldn't find the appointment
             // TODO: adding as new?
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
-        /// Returns a list of all appointments in the custom calendar
+        /// Returns a list of all SyncIDs that have been deleted
         /// </summary>
-        /// <returns>list of appointments</returns>
-        private List<Outlook.AppointmentItem> GetAppointments()
-        {
-            /*
-            if (_customCalendar == null) return null;
-
-            List<Outlook.AppointmentItem> returnList = new List<Outlook.AppointmentItem>();
-            foreach (Outlook.AppointmentItem item in _customCalendar.Items)
-            {
-                returnList.Add(item);
-            }
-
-            return returnList;
-             */
-
-            return GetAppointments(DateTime.MinValue);
-        }
-
-        /// <summary>
-        /// Returns a list of appointments in the custom calendar that have been changed since the TimeStamp
-        /// </summary>
-        /// <param name="timeStamp">time stamp to check against</param>
-        /// <returns>list of appointments</returns>
-        private List<Outlook.AppointmentItem> GetAppointments(DateTime timeStamp)
-        {
-            if (_customCalendar == null) return null;
-
-            List<Outlook.AppointmentItem> returnList = new List<Outlook.AppointmentItem>();
-            foreach (Outlook.AppointmentItem item in _customCalendar.Items)
-            {
-                if (item.LastModificationTime > timeStamp) returnList.Add(item);
-            }
-
-            return returnList;
-        }
-
-        /// <summary>
-        /// Returns a list of all appointment IDs that have been deleted
-        /// </summary>
-        /// <returns>list of GlobalAppointmentIDs</returns>
+        /// <returns>list of SyncIDs</returns>
         private List<String> GetAppointmentsForDeleting()
         {
             return _tempDeleteStorage;
@@ -352,16 +387,32 @@ namespace OutlookAddIn
         /// <param name="item"></param>
         private void AddItemToDeleteStorage(Outlook.AppointmentItem item)
         {
-            if (item == null) return;
-            _tempDeleteStorage.Add(item.GlobalAppointmentID);
+            // only synced items need to be remembered
+            if (item != null && item.ItemProperties["SyncID"] != null)
+                _tempDeleteStorage.Add(item.ItemProperties["SyncID"].Value);
         }
 
         /// <summary>
         /// Resets the Delete Storage
         /// </summary>
-        private void ClearDeleteStorage()
+        private void ResetDeleteStorage()
         {
             _tempDeleteStorage.Clear();
+        }
+
+        private DateTime GetLastSyncTime()
+        {
+            return _tempLastSyncTime;
+        }
+
+        private void SetSyncTime(DateTime time)
+        {
+            _tempLastSyncTime = time;
+        }
+
+        private void ResetSyncTime()
+        {
+            _tempLastSyncTime = DateTime.MinValue;
         }
 
         /// <summary>
@@ -387,8 +438,8 @@ namespace OutlookAddIn
             if (MoveTo.Name == deletedFolder.Name)
             {
                 AddItemToDeleteStorage(item);
-                //MessageBox.Show("Event: Item deleted");
             }
         }
+
     }
 }
