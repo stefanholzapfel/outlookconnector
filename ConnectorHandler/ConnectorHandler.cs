@@ -85,7 +85,7 @@ namespace OutlookAddIn
         /// Selects the choosen connector and executes its DoUpdates(AppointmentSyncCollection syncItems) method.
         /// </summary>
         /// <param name="syncItems"></param>
-        Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
+        public Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
         {
             foreach (var item in MefCalendarConnectors)
             {
