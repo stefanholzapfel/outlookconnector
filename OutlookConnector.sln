@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlookAddIn", "OutlookAddIn\OutlookAddIn.csproj", "{C6C4A779-A07F-4BAB-A7E2-A85D733971C7}"
 EndProject
@@ -10,6 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MEFCalenderConnectors", "MEFCalenderConnectors", "{26159849-8ED4-40B1-BBEB-DC0C58A7F77E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIn", "AddIn", "{98165F62-C40A-4B55-A092-A901499036CF}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\ConnectorHandler.cs = Shared\ConnectorHandler.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{62477092-21A4-44B2-A9E5-2E604F7A46BA}"
 EndProject
@@ -22,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestJulian", "ConsoleTestJulian\ConsoleTestJulian.csproj", "{A2C4897D-2BE9-4689-82BC-45A915070835}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarHandler", "CalendarHandler\CalendarHandler.csproj", "{00C4F372-BFBE-4A97-B079-01C6663B250B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectorHandler", "ConnectorHandler\ConnectorHandler.csproj", "{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +58,10 @@ Global
 		{00C4F372-BFBE-4A97-B079-01C6663B250B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00C4F372-BFBE-4A97-B079-01C6663B250B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00C4F372-BFBE-4A97-B079-01C6663B250B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,5 +73,6 @@ Global
 		{29738D4C-E4CB-41F3-92AF-7B244D597B5F} = {38924FB5-544E-4224-84DF-44A980469583}
 		{A2C4897D-2BE9-4689-82BC-45A915070835} = {38924FB5-544E-4224-84DF-44A980469583}
 		{00C4F372-BFBE-4A97-B079-01C6663B250B} = {98165F62-C40A-4B55-A092-A901499036CF}
+		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C} = {98165F62-C40A-4B55-A092-A901499036CF}
 	EndGlobalSection
 EndGlobal
