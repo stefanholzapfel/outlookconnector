@@ -10,9 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MEFCalenderConnectors", "MEFCalenderConnectors", "{26159849-8ED4-40B1-BBEB-DC0C58A7F77E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AddIn", "AddIn", "{98165F62-C40A-4B55-A092-A901499036CF}"
-	ProjectSection(SolutionItems) = preProject
-		Shared\ConnectorHandler.cs = Shared\ConnectorHandler.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{62477092-21A4-44B2-A9E5-2E604F7A46BA}"
 EndProject
