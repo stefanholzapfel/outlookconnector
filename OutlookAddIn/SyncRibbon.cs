@@ -14,7 +14,7 @@ namespace OutlookAddIn
     public partial class SyncRibbon
     {
         CalendarHandler _calHandler;
-        String _appointmentID;
+        String _syncID = "1";
         DateTime _syncTime = DateTime.Now;
 
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
@@ -34,14 +34,14 @@ namespace OutlookAddIn
 
         private void btn_FullGetUpdates_Click(object sender, RibbonControlEventArgs e)
         {
-            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates();
+            AppointmentSyncCollection syncCollection = _calHandler.GetInitialSync();
             if (syncCollection != null)
                 MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
         }
 
         private void btn_IncrGetUpdates_Click(object sender, RibbonControlEventArgs e)
         {
-            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates(_syncTime);
+            AppointmentSyncCollection syncCollection = _calHandler.GetUpdates();
             if (syncCollection != null)
                 MessageBox.Show("Added: " + syncCollection.AddList.Count + "; Updated: " + syncCollection.UpdateList.Count + "; Deleted: " + syncCollection.DeleteList.Count);
 
@@ -59,6 +59,8 @@ namespace OutlookAddIn
             newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
             newAppointment.ReminderSet = false;
 
+            newAppointment.SyncID = _syncID;
+
             AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
             syncCollection.AddList.Add(newAppointment);
 
@@ -67,7 +69,7 @@ namespace OutlookAddIn
 
         private void btn_DoUpdatesSet2_Click(object sender, RibbonControlEventArgs e)
         {
-            if (String.IsNullOrEmpty(_appointmentID))
+            if (String.IsNullOrEmpty(_syncID))
             {
                 MessageBox.Show("No ID for appointment provided");
                 return;
@@ -75,13 +77,14 @@ namespace OutlookAddIn
 
             OutlookAppointment updateAppointment = new OutlookAppointment();
 
-            updateAppointment.GlobalAppointmentID = _appointmentID;
             updateAppointment.Subject = "Test Appointment 2";
             updateAppointment.Body = "Testing the CalendarHandler, v2";
             updateAppointment.Start = DateTime.Now.AddDays(-1);
             updateAppointment.End = DateTime.Now.AddDays(-1);
             updateAppointment.Importance = Outlook.OlImportance.olImportanceHigh;
             updateAppointment.ReminderSet = false;
+
+            updateAppointment.SyncID = _syncID;
 
             AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
             syncCollection.UpdateList.Add(updateAppointment);
@@ -91,19 +94,32 @@ namespace OutlookAddIn
 
         private void btn_DoUpdatesSet3_Click(object sender, RibbonControlEventArgs e)
         {
-            if (String.IsNullOrEmpty(_appointmentID))
+            if (String.IsNullOrEmpty(_syncID))
             {
                 MessageBox.Show("No ID for appointment provided");
                 return;
             }
 
             OutlookAppointment deleteAppointment = new OutlookAppointment();
-            deleteAppointment.GlobalAppointmentID = _appointmentID;
+            deleteAppointment.SyncID = _syncID;
 
             AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
             syncCollection.DeleteList.Add(deleteAppointment);
 
             _calHandler.DoUpdates(syncCollection);
+        }
+
+        private void btn_UpdateSyncIDs_Click(object sender, RibbonControlEventArgs e)
+        {
+            AppointmentSyncCollection syncCollection = _calHandler.GetInitialSync();
+            Dictionary<String, String> idMapping = new Dictionary<string, string>();
+
+            foreach (OutlookAppointment appointment in syncCollection.AddList)
+            {
+                idMapping.Add(appointment.GlobalAppointmentID, "02");
+            }
+
+            _calHandler.UpdateSyncIDs(idMapping);
         }
     }
 }

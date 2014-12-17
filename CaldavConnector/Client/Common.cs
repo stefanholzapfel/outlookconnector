@@ -15,7 +15,7 @@ namespace CaldavConnector.Client
         {
             return Request(url, method, (req, str) =>
             {
-                req.ContentType = "text/xml";
+                req.ContentType = "application/xml";
                 var xml = content.ToString();
                 using (var wrtr = new System.IO.StreamWriter(str))
                     wrtr.Write(xml);
@@ -36,7 +36,7 @@ namespace CaldavConnector.Client
         {
             var req = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
             req.Method = method.ToUpper();
-
+            //req.ContentType = "application/xml";
             //Dear .NET, please don't try to do things for me.  kthxbai
             System.Net.ServicePointManager.Expect100Continue = false;
 
@@ -55,6 +55,8 @@ namespace CaldavConnector.Client
                 var b64 = credentials.UserName + ":" + credentials.Password;
                 b64 = System.Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(b64));
                 req.Headers[HttpRequestHeader.Authorization] = "Basic " + b64;
+                //req.PreAuthenticate = true;
+                
             }
 
             using (var stream = req.GetRequestStream())

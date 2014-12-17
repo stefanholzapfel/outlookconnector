@@ -29,7 +29,8 @@ namespace CaldavConnector
             string uPasswd = "fst5";
 
             WebHeaderCollection headers = new WebHeaderCollection();
-            headers.Add("Depth", "1");
+            headers.Add("Depth", "0");
+            headers.Add("prefer", "return-minimal");
 
             string content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><C:calendar-query xmlns:C=\"urn:ietf:params:xml:ns:caldav\">" +
              "<D:prop xmlns:D=\"DAV:\">" +
@@ -43,13 +44,24 @@ namespace CaldavConnector
              "</C:filter>" +
            "</C:calendar-query>";
 
+            string content2 = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
+    "<d:prop>"+
+        "<d:getetag />"+
+    "</d:prop>"+
+    "<c:filter>"+
+        "<c:comp-filter name=\"VCALENDAR\">"+
+            "<c:comp-filter name=\"VEVENT\" />" +
+        "</c:comp-filter>"+
+    "</c:filter>"+
+"</c:calendar-query>";
+
             HttpWebRequest ReportRequest = (HttpWebRequest)WebRequest.Create(uri);
-            ReportRequest.Method = "REPORT";
+            ReportRequest.Method = "PROPFIND";
             ReportRequest.Credentials = new NetworkCredential(uName, uPasswd);
             ReportRequest.PreAuthenticate = true;
             ReportRequest.Headers = headers;
             ReportRequest.ContentType = "application/xml";
-            byte[] optionsArray = Encoding.UTF8.GetBytes(content);
+            byte[] optionsArray = Encoding.UTF8.GetBytes(content2);
             ReportRequest.ContentLength = optionsArray.Length;
 
             System.IO.Stream requestStream = ReportRequest.GetRequestStream();
