@@ -33,6 +33,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>.\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,6 +70,7 @@
     <Compile Include="Client\Common.cs" />
     <Compile Include="Client\Server.cs" />
     <Compile Include="Converter\IcsToAppointmentItemConverter.cs" />
+    <Compile Include="DataLayer\LocalStorageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,11 +15,9 @@ namespace CaldavConnector
     {
         private static String _name = "CaldavConnector";
 
-        public AppointmentSyncCollection GetUpdates()
-        {
-            Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
-            return new Shared.AppointmentSyncCollection();
-        }
+        private String Username;
+        private String Password;
+        private String CalendarUrl;
 
         public void Test()
         {
@@ -66,19 +64,39 @@ namespace CaldavConnector
             ResponseXmlDoc.Load(ResponseStream);
         }
 
+        public ConnectorSettings Settings
+        {
+            set {
+                Username = value.Username;
+                Password = value.Password;
+                CalendarUrl = value.CalendarUrl;
+            }
+        }
+
         public string ConnectorName
         {
             get { return CaldavConnector._name; }
         }
 
+        /// <summary>
+        /// Drops an existing database, creates a new one, fetches all ics elements from server, 
+        /// writes their etags and uid to the database, converts the ics to Outlook Appointments 
+        /// and returns them.
+        /// </summary>
+        /// <returns>A collection of all appointments on serverside.</returns>
         public AppointmentSyncCollection GetInitialSync()
         {
             throw new NotImplementedException();
         }
 
-        public ConnectorSettings Settings
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public AppointmentSyncCollection GetUpdates()
         {
-            set { throw new NotImplementedException(); }
+            Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
+            return new Shared.AppointmentSyncCollection();
         }
 
         public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)

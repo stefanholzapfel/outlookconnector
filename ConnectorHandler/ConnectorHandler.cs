@@ -18,7 +18,7 @@ namespace OutlookAddIn
         public List<ICalendarSyncable> MefCalendarConnectors { get; set; }
 
         /// <summary>
-        /// This constrcutor builds a blank ConnectorHandler to be capable of returning a list of available connectors via GetAvailableConnectors()
+        /// This constrcutor builds a blank ConnectorHandler to be capable of returning a list of available connectors via GetAvailableConnectors(). No connector choosen so far.
         /// </summary>
         public ConnectorHandler()
         {
@@ -53,7 +53,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Selects the choosen connector and executes its GetUpdates(DateTime timestamp) method.
+        /// Selects the choosen connector and executes its GetUpdates(DateTime timestamp) method with choosen connector.
         /// </summary>
         /// <param name="timestamp"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Selects the choosen connector and executes its GetUpdates() method.
+        /// Selects the choosen connector and executes its GetUpdates() method with choosen connector.
         /// </summary>
         /// <returns></returns>
         public Shared.AppointmentSyncCollection GetUpdates()
@@ -82,7 +82,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Selects the choosen connector and executes its DoUpdates(AppointmentSyncCollection syncItems) method.
+        /// Selects the choosen connector and executes its DoUpdates(AppointmentSyncCollection syncItems) method with choosen connector.
         /// </summary>
         /// <param name="syncItems"></param>
         public Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
