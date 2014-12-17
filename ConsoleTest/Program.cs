@@ -15,8 +15,8 @@ namespace ConsoleTest
             ConnectorHandler myHandler = new ConnectorHandler();
 
             LocalStorageProvider myProvider = new LocalStorageProvider();
-            //myProvider.editCTag("12345","CTag2");
-            Dictionary<String, String> test = myProvider.getAll();
+            //myProvider.deleteEntry("12345");
+            String test = myProvider.findEntry("1234");
 
             Console.ReadLine();
         }

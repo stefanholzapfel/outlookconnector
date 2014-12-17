@@ -46,7 +46,7 @@ namespace CaldavConnector.DataLayer
         /// </summary>
         /// <param name="Guid">The Guid to look up.</param>
         /// <returns>The matching CTag for the given Guid or null if nothing found.</returns>
-        public String searchCTag(String Guid) {
+        public String findEntry(String Guid) {
             String temp = null;
             if (localCache.ContainsKey(Guid))
                 temp = localCache[Guid];
