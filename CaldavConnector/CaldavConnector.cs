@@ -7,6 +7,11 @@ using System.Net;
 using System.Text;
 using Shared;
 using System.Threading.Tasks;
+using CaldavConnector.DataLayer;
+using System.Xml;
+using CaldavConnector.Model;
+using CaldavConnector.Converter;
+using CaldavConnector.Utilities;
 
 namespace CaldavConnector
 {
@@ -14,10 +19,16 @@ namespace CaldavConnector
     public class CaldavConnector : ICalendarSyncable
     {
         private static String _name = "CaldavConnector";
+        private LocalStorageProvider _localStorage;
 
         private String Username;
         private String Password;
         private String CalendarUrl;
+
+        public CaldavConnector()
+        {
+            _localStorage = new LocalStorageProvider();
+        }
 
         public void Test()
         {
@@ -85,9 +96,12 @@ namespace CaldavConnector
             }
         }
 
+        /// <summary>
+        /// Property that holds the connectors name.
+        /// </summary>
         public string ConnectorName
         {
-            get { return CaldavConnector._name; }
+            get { return _name; }
         }
 
         /// <summary>
@@ -98,7 +112,52 @@ namespace CaldavConnector
         /// <returns>A collection of all appointments on serverside.</returns>
         public AppointmentSyncCollection GetInitialSync()
         {
-            throw new NotImplementedException();
+            _localStorage.rebuildDatabase();
+
+            System.IO.Stream ResponseStream;
+            System.Xml.XmlDocument ResponseXmlDoc;
+
+            string uri = "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5";
+            string uName = "fst5";
+            string uPasswd = "fst5";
+
+            WebHeaderCollection headers = new WebHeaderCollection();
+            headers.Add("Depth", "1");
+            headers.Add("Prefer", "return-minimal");
+
+            string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
+                                "<d:prop>" +
+                                    "<d:getetag />" +
+                                    "<c:calendar-data />" +
+                                "</d:prop>" +
+                                "<c:filter>" +
+                                    "<c:comp-filter name=\"VCALENDAR\" />" +
+                                "</c:filter>" +
+                            "</c:calendar-query>";
+            HttpWebRequest ReportRequest = (HttpWebRequest)WebRequest.Create(uri);
+            ReportRequest.Method = "REPORT";
+            ReportRequest.Credentials = new NetworkCredential(uName, uPasswd);
+            ReportRequest.PreAuthenticate = true;
+            ReportRequest.Headers = headers;
+            ReportRequest.ContentType = "application/xml";
+            byte[] optionsArray = Encoding.UTF8.GetBytes(query);
+            ReportRequest.ContentLength = optionsArray.Length;
+
+            System.IO.Stream requestStream = ReportRequest.GetRequestStream();
+            requestStream.Write(optionsArray, 0, optionsArray.Length);
+            requestStream.Close();
+
+            HttpWebResponse ReportResponse = (HttpWebResponse)ReportRequest.GetResponse();
+
+            ResponseStream = ReportResponse.GetResponseStream();
+
+            ResponseXmlDoc = new System.Xml.XmlDocument();
+            ResponseXmlDoc.Load(ResponseStream);
+
+            List<CalDavElement> responseList = XmlCalDavParser.Parse(ResponseXmlDoc);
+            responseList.
+
+            return new AppointmentSyncCollection();
         }
 
         /// <summary>

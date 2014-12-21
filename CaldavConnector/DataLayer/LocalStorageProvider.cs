@@ -12,7 +12,7 @@ namespace CaldavConnector.DataLayer
     {
         private static String filepath = "Data/CalDavConnectorCache.sqlite";
         private static String foldername = "Data";
-        Dictionary<String, String> localCache;
+        Dictionary<String, String[]> localCache;
         SQLiteConnection myConnection;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace CaldavConnector.DataLayer
             if (!Directory.Exists(foldername))
                 Directory.CreateDirectory(foldername);
             SQLiteConnection.CreateFile(filepath);
-            executeNonQuery("CREATE TABLE localCTagCache (Guid VARCHAR(20), CTag VARCHAR(20))");
+            executeNonQuery("CREATE TABLE localCTagCache (Guid VARCHAR(100), CTag VARCHAR(100), Url VARCHAR(100))");
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace CaldavConnector.DataLayer
         /// </summary>
         /// <param name="Guid">The Guid to look up.</param>
         /// <returns>The matching CTag for the given Guid or null if nothing found.</returns>
-        public String findEntry(String Guid) {
-            String temp = null;
+        public String[] findEntry(String Guid) {
+            String[] temp = null;
             if (localCache.ContainsKey(Guid))
                 temp = localCache[Guid];
             return temp;
@@ -58,7 +58,7 @@ namespace CaldavConnector.DataLayer
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <returns>Dictionary of all entries</returns>
-        public Dictionary<String, String> getAll()
+        public Dictionary<String, String[]> getAll()
         {
             return localCache;
         }
@@ -72,7 +72,7 @@ namespace CaldavConnector.DataLayer
         public void editCTag(String Guid, String CTag) {
             if (localCache.ContainsKey(Guid))
             {
-                localCache[Guid] = CTag;
+                localCache[Guid][0] = CTag;
                 executeNonQuery("UPDATE localCTagCache SET CTag ='"+CTag+"' WHERE Guid='"+Guid+"'");
             }
         }
@@ -84,11 +84,11 @@ namespace CaldavConnector.DataLayer
         /// <param name="Guid">Guid to add.</param>
         /// <param name="Etag">CTag to add.</param>
         /// 
-        public void writeEntry(String Guid, String CTag) {
+        public void writeEntry(String Guid, String CTag, String Url) {
             if (!localCache.ContainsKey(Guid))
             {
-                localCache.Add(Guid, CTag);
-                executeNonQuery("INSERT INTO localCTagCache (Guid, CTag) values ('" + Guid + "', '" + CTag + "')");
+                localCache.Add(Guid, new String[] {CTag, Url});
+                executeNonQuery("INSERT INTO localCTagCache (Guid, CTag, Url) values ('" + Guid + "', '" + CTag + "', '" + Url + "')");
             }
         }
 
@@ -107,7 +107,7 @@ namespace CaldavConnector.DataLayer
 
         /// <summary>
         /// Helper method that executes a query against the database 
-        /// that receives no data.
+        /// that receives no data back.
         /// </summary>
         /// <param name="query">SQL query to execute.</param>
         /// <returns>Number of rows affected.</returns>
@@ -123,18 +123,18 @@ namespace CaldavConnector.DataLayer
 
         /// <summary>
         /// Helper method that executes a query against the database 
-        /// that receives data.
+        /// that receives data back.
         /// </summary>
         /// <param name="query">SQL query to execute.</param>
         /// <returns>Dictionary with results from query.</returns>
-        private Dictionary<String,String> executeQuery(String query)
+        private Dictionary<String,String[]> executeQuery(String query)
         {
-            Dictionary<String, String> tempDictionary = new Dictionary<String, String>();
+            Dictionary<String, String[]> tempDictionary = new Dictionary<String, String[]>();
             myConnection.Open();
             SQLiteCommand command = new SQLiteCommand(query, myConnection);
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
-                tempDictionary.Add(reader["Guid"].ToString(), reader["CTag"].ToString());
+                tempDictionary.Add(reader["Guid"].ToString(), new String[] { reader["CTag"].ToString(), reader["Url"].ToString() });
             myConnection.Close();
             return tempDictionary;
         }

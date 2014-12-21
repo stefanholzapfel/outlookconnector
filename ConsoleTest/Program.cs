@@ -14,9 +14,8 @@ namespace ConsoleTest
         {
             ConnectorHandler myHandler = new ConnectorHandler();
 
-            LocalStorageProvider myProvider = new LocalStorageProvider();
-            //myProvider.deleteEntry("12345");
-            String test = myProvider.findEntry("1234");
+            myHandler.ChooseConnector("CaldavConnector");
+            myHandler.GetInitialSync();
 
             Console.ReadLine();
         }
