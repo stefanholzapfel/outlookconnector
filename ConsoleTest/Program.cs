@@ -1,5 +1,6 @@
 ﻿using CaldavConnector.DataLayer;
 using OutlookAddIn;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,9 @@ namespace ConsoleTest
             ConnectorHandler myHandler = new ConnectorHandler();
 
             myHandler.ChooseConnector("CaldavConnector");
-            myHandler.GetInitialSync();
+            myHandler.Settings = new ConnectorSettings("fst5", "fst5", "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5");
+
+            AppointmentSyncCollection test = myHandler.GetInitialSync();
 
             Console.ReadLine();
         }
