@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace OutlookAddIn
         public ConnectorHandler()
         {
             choosenConnector = null;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
             var catalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
