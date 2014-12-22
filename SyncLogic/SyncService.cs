@@ -14,6 +14,12 @@ namespace SyncLogic
         private ICalendarSyncable _syncMain;
         private ICalendarSyncable _syncSecondary;
         private Timer _syncThread = new Timer();
+        private bool _isStarted = false;
+
+        /// <summary>
+        /// minimum interval time
+        /// </summary>
+        public const double MIN_INTERVAL = 1000;
 
         public SyncService(ICalendarSyncable syncMain, ICalendarSyncable syncSecondary, double interval)
         {
@@ -29,19 +35,26 @@ namespace SyncLogic
         /// Sets the interval for the repeating synchronization
         /// </summary>
         /// <param name="interval">interval in milliseconds</param>
-        public void SetInterval(double interval)
+        /// <returns>true if the interval is within allowed range</returns>
+        public bool SetInterval(double interval)
         {
-            if (interval <= 0) return;
+            if (interval < MIN_INTERVAL) return false;
+
             _syncThread.Interval = interval;
+            return true;
         }
 
         /// <summary>
-        /// Starts the repeating synchronization
+        /// Starts the continuous synchronization
         /// </summary>
-        public void Start()
+        /// <returns>true if starting was successful</returns>
+        public bool Start()
         {
-            if (_syncThread.Interval <= 0) return;
+            if (_syncThread.Interval < MIN_INTERVAL) return false;
+
             _syncThread.Start();
+            _isStarted = true;
+            return true;
         }
 
         /// <summary>
@@ -50,20 +63,33 @@ namespace SyncLogic
         public void Stop()
         {
             _syncThread.Stop();
+            _isStarted = false;
         }
 
         /// <summary>
         /// Executes the synchronization once
         /// </summary>
-        public void ExecuteSyncOnce()
+        public void ExecuteOnce()
         {
-            throw new NotImplementedException();
-            //Debug.WriteLine("Executed: " + DateTime.Now.Second);
+            // if the timer is already running, it needs to be stopped before the manual sync and then restarted
+
+            if (_isStarted) _syncThread.Stop();
+            Synchronize();
+            if (_isStarted) _syncThread.Start();
         }
 
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
-            ExecuteSyncOnce();
+            Synchronize();
+        }
+
+        /// <summary>
+        /// Synchronizes both calendars
+        /// </summary>
+        private void Synchronize()
+        {
+            //throw new NotImplementedException();
+            Debug.WriteLine("Executing Synchronize() ... (" + DateTime.Now.ToLongTimeString() + ")");
         }
 
     }

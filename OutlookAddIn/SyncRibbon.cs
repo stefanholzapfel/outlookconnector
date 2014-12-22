@@ -126,7 +126,7 @@ namespace OutlookAddIn
 
         private void btn_DoManualSync_Click(object sender, RibbonControlEventArgs e)
         {
-            _synService.ExecuteSyncOnce();
+            _synService.ExecuteOnce();
         }
 
         private void btn_StartSync_Click(object sender, RibbonControlEventArgs e)
