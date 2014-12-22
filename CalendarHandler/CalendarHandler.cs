@@ -266,16 +266,16 @@ namespace OutlookAddIn
             newAppointment.Body = appointment.Body;
             newAppointment.Start = appointment.Start;
             newAppointment.End = appointment.End;
-            newAppointment.ReminderSet = appointment.ReminderSet;
-            newAppointment.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
+            newAppointment.ReminderSet = false;
+            //newAppointment.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
             newAppointment.Location = appointment.Location;
             newAppointment.AllDayEvent = appointment.AllDayEvent;
 
-            if (appointment.Attachments != null)
-                newAppointment.Attachments.Add(appointment.Attachments);
+            //if (appointment.Attachments != null)
+                //newAppointment.Attachments.Add(appointment.Attachments);
 
             newAppointment.Duration = appointment.Duration;
-            newAppointment.Importance = appointment.Importance;
+            newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
 
             // GlobalAppointmentID must be stored as custom item property as well, because GlobalAppointmentID property cannot be searched for
             newAppointment.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
@@ -344,16 +344,16 @@ namespace OutlookAddIn
                 foundItem.Body = appointment.Body;
                 foundItem.Start = appointment.Start;
                 foundItem.End = appointment.End;
-                foundItem.ReminderSet = appointment.ReminderSet;
-                foundItem.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
+                //foundItem.ReminderSet = appointment.ReminderSet;
+                //foundItem.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
                 foundItem.Location = appointment.Location;
                 foundItem.AllDayEvent = appointment.AllDayEvent;
 
-                if (appointment.Attachments != null)
-                    foundItem.Attachments.Add(appointment.Attachments);
+                //if (appointment.Attachments != null)
+                    //foundItem.Attachments.Add(appointment.Attachments);
 
                 foundItem.Duration = appointment.Duration;
-                foundItem.Importance = appointment.Importance;
+                //foundItem.Importance = appointment.Importance;
 
                 if (foundItem.ItemProperties["SyncID"] == null)
                     foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);

@@ -20,6 +20,7 @@ namespace CaldavConnector.Converter
             _myAppointment.End = (DateTime)_myElement.End;
             _myAppointment.Location = _myElement.Location;
             _myAppointment.LastModificationTime = (DateTime)_myElement.LastModified;
+
             //_myAppointment.ReminderSet = appointment.ReminderSet;
             //_myAppointment.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
             //_myAppointment.AllDayEvent = appointment.AllDayEvent;

@@ -56,8 +56,8 @@ namespace OutlookAddIn
             newAppointment.Body = "Testing the CalendarHandler";
             newAppointment.Start = DateTime.Now.AddHours(1);
             newAppointment.End = DateTime.Now.AddHours(1.25);
-            newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
-            newAppointment.ReminderSet = false;
+            //newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
+            //newAppointment.ReminderSet = false;
 
             newAppointment.SyncID = _syncID;
 
@@ -81,8 +81,8 @@ namespace OutlookAddIn
             updateAppointment.Body = "Testing the CalendarHandler, v2";
             updateAppointment.Start = DateTime.Now.AddDays(-1);
             updateAppointment.End = DateTime.Now.AddDays(-1);
-            updateAppointment.Importance = Outlook.OlImportance.olImportanceHigh;
-            updateAppointment.ReminderSet = false;
+            //updateAppointment.Importance = Outlook.OlImportance.olImportanceHigh;
+            //updateAppointment.ReminderSet = false;
 
             updateAppointment.SyncID = _syncID;
 

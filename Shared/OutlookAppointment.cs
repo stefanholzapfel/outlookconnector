@@ -19,12 +19,8 @@ namespace Shared
         public String Subject { get; set; }
         
         public String Body { get; set; }
-        
-        //public Object RTFBody { get; set; }
-        
+
         public DateTime Start { get; set; }
-        
-        //public DateTime StartUTC { get; set; }
 
         private DateTime _end;
         public DateTime End
@@ -37,33 +33,27 @@ namespace Shared
             }
         }
 
-        //public DateTime EndUTC { get; set; }
-        
-        public bool ReminderSet { get; set; }
-        
-        public int ReminderMinutesBeforeStart { get; set; }
-        
         public String Location { get; set; }
-        
-        public bool AllDayEvent { get; set; }
 
-        public Outlook.Attachments Attachments { get; set; }
-        
-        public DateTime CreationTime { get; set; }
-        
-        public DateTime LastModificationTime { get; set; }
+        public bool AllDayEvent { get; set; }
 
         private int _duration;
         public int Duration
         {
             get { return _duration; }
-
         }
 
-        public Outlook.OlImportance Importance { get; set; }
-        
-        //public bool IsRecurring { get; set; }
+        public DateTime LastModificationTime { get; set; }
 
+        //public Object RTFBody { get; set; }
+        //public DateTime StartUTC { get; set; }
+        //public DateTime EndUTC { get; set; }
+        //public bool ReminderSet { get; set; }
+        //public int ReminderMinutesBeforeStart { get; set; }
+        //public Outlook.Attachments Attachments { get; set; }
+        //public DateTime CreationTime { get; set; }
+        //public Outlook.OlImportance Importance { get; set; }
+        //public bool IsRecurring { get; set; }
         //public OlRecurrenceState RecurrenceState { get; set; }
 
         #endregion
@@ -82,20 +72,22 @@ namespace Shared
             this.GlobalAppointmentID = item.GlobalAppointmentID;
             this.Subject = item.Subject;
             this.Body = item.Body;
-            //this.RTFBody = item.RTFBody;
             this.Start = item.Start;
-            //this.StartUTC = item.StartUTC;
             this.End = item.End;
-            //this.EndUTC = item.EndUTC;
-            this.ReminderSet = item.ReminderSet;
-            this.ReminderMinutesBeforeStart = item.ReminderMinutesBeforeStart;
             this.Location = item.Location;
             this.AllDayEvent = item.AllDayEvent;
-            this.Attachments = item.Attachments;
-            this.CreationTime = item.CreationTime;
+
             this.LastModificationTime = item.LastModificationTime;
+
+            //this.RTFBody = item.RTFBody;
+            //this.StartUTC = item.StartUTC;
+            //this.EndUTC = item.EndUTC;
+            //this.ReminderSet = item.ReminderSet;
+            //this.ReminderMinutesBeforeStart = item.ReminderMinutesBeforeStart;
+            //this.Attachments = item.Attachments;
+            //this.CreationTime = item.CreationTime;
             //this.Duration = item.Duration;
-            this.Importance = item.Importance;
+            //this.Importance = item.Importance;
             //this.IsRecurring = item.IsRecurring;
             //this.RecurrenceState = item.RecurrenceState;
         }
