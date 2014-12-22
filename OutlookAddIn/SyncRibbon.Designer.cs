@@ -42,17 +42,24 @@
             this.btn_DoUpdatesSet1 = this.Factory.CreateRibbonButton();
             this.btn_DoUpdatesSet2 = this.Factory.CreateRibbonButton();
             this.btn_DoUpdatesSet3 = this.Factory.CreateRibbonButton();
+            this.separator3 = this.Factory.CreateRibbonSeparator();
+            this.btn_UpdateSyncIDs = this.Factory.CreateRibbonButton();
             this.separator2 = this.Factory.CreateRibbonSeparator();
             this.btn_IncrGetUpdates = this.Factory.CreateRibbonButton();
             this.btn_FullGetUpdates = this.Factory.CreateRibbonButton();
-            this.separator3 = this.Factory.CreateRibbonSeparator();
-            this.btn_UpdateSyncIDs = this.Factory.CreateRibbonButton();
+            this.group2 = this.Factory.CreateRibbonGroup();
+            this.btn_DoManualSync = this.Factory.CreateRibbonButton();
+            this.btn_StartSync = this.Factory.CreateRibbonButton();
+            this.btn_StopSync = this.Factory.CreateRibbonButton();
+            this.btn_ChangeInterval = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
+            this.group2.SuspendLayout();
             // 
             // tab1
             // 
             this.tab1.Groups.Add(this.group1);
+            this.tab1.Groups.Add(this.group2);
             this.tab1.Label = "Sync";
             this.tab1.Name = "tab1";
             // 
@@ -106,6 +113,16 @@
             this.btn_DoUpdatesSet3.Name = "btn_DoUpdatesSet3";
             this.btn_DoUpdatesSet3.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DoUpdatesSet3_Click);
             // 
+            // separator3
+            // 
+            this.separator3.Name = "separator3";
+            // 
+            // btn_UpdateSyncIDs
+            // 
+            this.btn_UpdateSyncIDs.Label = "Update SyncIDs";
+            this.btn_UpdateSyncIDs.Name = "btn_UpdateSyncIDs";
+            this.btn_UpdateSyncIDs.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_UpdateSyncIDs_Click);
+            // 
             // separator2
             // 
             this.separator2.Name = "separator2";
@@ -122,15 +139,38 @@
             this.btn_FullGetUpdates.Name = "btn_FullGetUpdates";
             this.btn_FullGetUpdates.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_FullGetUpdates_Click);
             // 
-            // separator3
+            // group2
             // 
-            this.separator3.Name = "separator3";
+            this.group2.Items.Add(this.btn_DoManualSync);
+            this.group2.Items.Add(this.btn_StartSync);
+            this.group2.Items.Add(this.btn_StopSync);
+            this.group2.Items.Add(this.btn_ChangeInterval);
+            this.group2.Label = "Test SyncLogic";
+            this.group2.Name = "group2";
             // 
-            // btn_UpdateSyncIDs
+            // btn_DoManualSync
             // 
-            this.btn_UpdateSyncIDs.Label = "Update SyncIDs";
-            this.btn_UpdateSyncIDs.Name = "btn_UpdateSyncIDs";
-            this.btn_UpdateSyncIDs.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_UpdateSyncIDs_Click);
+            this.btn_DoManualSync.Label = "Execute manual sync";
+            this.btn_DoManualSync.Name = "btn_DoManualSync";
+            this.btn_DoManualSync.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_DoManualSync_Click);
+            // 
+            // btn_StartSync
+            // 
+            this.btn_StartSync.Label = "Start Sync";
+            this.btn_StartSync.Name = "btn_StartSync";
+            this.btn_StartSync.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_StartSync_Click);
+            // 
+            // btn_StopSync
+            // 
+            this.btn_StopSync.Label = "Stop Sync";
+            this.btn_StopSync.Name = "btn_StopSync";
+            this.btn_StopSync.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_StopSync_Click);
+            // 
+            // btn_ChangeInterval
+            // 
+            this.btn_ChangeInterval.Label = "Change interval";
+            this.btn_ChangeInterval.Name = "btn_ChangeInterval";
+            this.btn_ChangeInterval.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_ChangeInterval_Click);
             // 
             // SyncRibbon
             // 
@@ -142,6 +182,8 @@
             this.tab1.PerformLayout();
             this.group1.ResumeLayout(false);
             this.group1.PerformLayout();
+            this.group2.ResumeLayout(false);
+            this.group2.PerformLayout();
 
         }
 
@@ -160,6 +202,11 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DoUpdatesSet3;
         internal Microsoft.Office.Tools.Ribbon.RibbonSeparator separator3;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_UpdateSyncIDs;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group2;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_DoManualSync;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_StartSync;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_StopSync;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_ChangeInterval;
     }
 
     partial class ThisRibbonCollection

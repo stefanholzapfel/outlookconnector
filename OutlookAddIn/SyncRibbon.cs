@@ -8,12 +8,14 @@ using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using Shared;
+using SyncLogic;
 
 namespace OutlookAddIn
 {
     public partial class SyncRibbon
     {
         CalendarHandler _calHandler;
+        SyncService _synService = new SyncService(null, null, 1000);
         String _syncID = "1";
         DateTime _syncTime = DateTime.Now;
 
@@ -120,6 +122,26 @@ namespace OutlookAddIn
             }
 
             _calHandler.UpdateSyncIDs(idMapping);
+        }
+
+        private void btn_DoManualSync_Click(object sender, RibbonControlEventArgs e)
+        {
+            _synService.ExecuteSyncOnce();
+        }
+
+        private void btn_StartSync_Click(object sender, RibbonControlEventArgs e)
+        {
+            _synService.Start();
+        }
+
+        private void btn_StopSync_Click(object sender, RibbonControlEventArgs e)
+        {
+            _synService.Stop();
+        }
+
+        private void btn_ChangeInterval_Click(object sender, RibbonControlEventArgs e)
+        {
+            _synService.SetInterval(2000);
         }
     }
 }

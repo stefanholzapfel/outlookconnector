@@ -211,6 +211,10 @@
       <Project>{04a7f31b-24d4-4c96-9623-12419ed39c6b}</Project>
       <Name>Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SyncLogic\SyncLogic.csproj">
+      <Project>{18fb13f3-a77f-40b1-90e4-fb6c38a96d5c}</Project>
+      <Name>SyncLogic</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

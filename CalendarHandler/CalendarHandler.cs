@@ -241,7 +241,8 @@ namespace OutlookAddIn
             {
                 Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", entry.Key));
 
-                if (foundItem.ItemProperties["SyncID"] == null) { 
+                if (foundItem.ItemProperties["SyncID"] == null)
+                {
                     foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
                     foundItem.Save();
                 }
@@ -272,7 +273,7 @@ namespace OutlookAddIn
             newAppointment.AllDayEvent = appointment.AllDayEvent;
 
             //if (appointment.Attachments != null)
-                //newAppointment.Attachments.Add(appointment.Attachments);
+            //newAppointment.Attachments.Add(appointment.Attachments);
 
             newAppointment.Duration = appointment.Duration;
             newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
@@ -350,7 +351,7 @@ namespace OutlookAddIn
                 foundItem.AllDayEvent = appointment.AllDayEvent;
 
                 //if (appointment.Attachments != null)
-                    //foundItem.Attachments.Add(appointment.Attachments);
+                //foundItem.Attachments.Add(appointment.Attachments);
 
                 foundItem.Duration = appointment.Duration;
                 //foundItem.Importance = appointment.Importance;
