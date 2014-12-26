@@ -59,11 +59,8 @@ namespace OutlookAddIn
                 password = confManager.GetPassword();
                 txt_Password.Text = password;
                 
-            }
-            //test
-           
+            }           
         }
-
         private void btn_Reset_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Do you really want to reset the synchronization?", "Reset Synchronization", MessageBoxButtons.YesNo);
@@ -86,6 +83,10 @@ namespace OutlookAddIn
             if (txt_Username.Text == "" || txt_CalendarName.Text == "" || txt_Password.Text == "" || txt_URL.Text == "" || txt_UpdateInterval.Text == "" || cbo_Connector.SelectedItem == null)
             {
                 MessageBox.Show("Please fill out all forms");
+            }
+            else if (!int.TryParse(txt_UpdateInterval.Text, out updateInterval))
+            {
+                MessageBox.Show("Update Interval only allows numbers between 1000 and 2.147.483.647");
             }
             else if (Int32.Parse(txt_UpdateInterval.Text) < 1000)
             {
