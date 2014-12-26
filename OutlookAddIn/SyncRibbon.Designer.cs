@@ -52,14 +52,18 @@
             this.btn_StartSync = this.Factory.CreateRibbonButton();
             this.btn_StopSync = this.Factory.CreateRibbonButton();
             this.btn_ChangeInterval = this.Factory.CreateRibbonButton();
+            this.group3 = this.Factory.CreateRibbonGroup();
+            this.btn_Settings = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.group2.SuspendLayout();
+            this.group3.SuspendLayout();
             // 
             // tab1
             // 
             this.tab1.Groups.Add(this.group1);
             this.tab1.Groups.Add(this.group2);
+            this.tab1.Groups.Add(this.group3);
             this.tab1.Label = "Sync";
             this.tab1.Name = "tab1";
             // 
@@ -172,6 +176,18 @@
             this.btn_ChangeInterval.Name = "btn_ChangeInterval";
             this.btn_ChangeInterval.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_ChangeInterval_Click);
             // 
+            // group3
+            // 
+            this.group3.Items.Add(this.btn_Settings);
+            this.group3.Label = "Settings";
+            this.group3.Name = "group3";
+            // 
+            // btn_Settings
+            // 
+            this.btn_Settings.Label = "Settings";
+            this.btn_Settings.Name = "btn_Settings";
+            this.btn_Settings.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_Settings_Click);
+            // 
             // SyncRibbon
             // 
             this.Name = "SyncRibbon";
@@ -184,6 +200,8 @@
             this.group1.PerformLayout();
             this.group2.ResumeLayout(false);
             this.group2.PerformLayout();
+            this.group3.ResumeLayout(false);
+            this.group3.PerformLayout();
 
         }
 
@@ -207,6 +225,8 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_StartSync;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_StopSync;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_ChangeInterval;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group3;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_Settings;
     }
 
     partial class ThisRibbonCollection

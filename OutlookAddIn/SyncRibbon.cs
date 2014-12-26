@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using Shared;
 using SyncLogic;
+using ConfigManager;
 
 namespace OutlookAddIn
 {
@@ -18,6 +19,8 @@ namespace OutlookAddIn
         SyncService _synService = new SyncService(null, null, 1000);
         String _syncID = "1";
         DateTime _syncTime = DateTime.Now;
+        ConfigurationManager _confManager = new ConfigurationManager();
+
 
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {
@@ -142,6 +145,12 @@ namespace OutlookAddIn
         private void btn_ChangeInterval_Click(object sender, RibbonControlEventArgs e)
         {
             _synService.SetInterval(2000);
+        }
+
+        private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
+        {
+            ConfigManagerUI formMain = new ConfigManagerUI(_confManager);
+            formMain.ShowDialog();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlookAddIn", "OutlookAddIn\OutlookAddIn.csproj", "{C6C4A779-A07F-4BAB-A7E2-A85D733971C7}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectorHandler", "ConnectorHandler\ConnectorHandler.csproj", "{1C5EF169-CEC5-4B01-B2B6-5B731A24967C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncLogic", "SyncLogic\SyncLogic.csproj", "{18FB13F3-A77F-40B1-90E4-FB6C38A96D5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigManager", "ConfigManager\ConfigManager.csproj", "{5D19B642-C4AA-4F64-9108-693C22FB81A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestAndi", "ConsoleTestAndi\ConsoleTestAndi.csproj", "{346E77A4-C1A6-42F5-AEDD-C69253182F5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,14 @@ Global
 		{18FB13F3-A77F-40B1-90E4-FB6C38A96D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18FB13F3-A77F-40B1-90E4-FB6C38A96D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18FB13F3-A77F-40B1-90E4-FB6C38A96D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D19B642-C4AA-4F64-9108-693C22FB81A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D19B642-C4AA-4F64-9108-693C22FB81A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D19B642-C4AA-4F64-9108-693C22FB81A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D19B642-C4AA-4F64-9108-693C22FB81A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{346E77A4-C1A6-42F5-AEDD-C69253182F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{346E77A4-C1A6-42F5-AEDD-C69253182F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{346E77A4-C1A6-42F5-AEDD-C69253182F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{346E77A4-C1A6-42F5-AEDD-C69253182F5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +90,7 @@ Global
 		{00C4F372-BFBE-4A97-B079-01C6663B250B} = {98165F62-C40A-4B55-A092-A901499036CF}
 		{1C5EF169-CEC5-4B01-B2B6-5B731A24967C} = {98165F62-C40A-4B55-A092-A901499036CF}
 		{18FB13F3-A77F-40B1-90E4-FB6C38A96D5C} = {98165F62-C40A-4B55-A092-A901499036CF}
+		{5D19B642-C4AA-4F64-9108-693C22FB81A8} = {98165F62-C40A-4B55-A092-A901499036CF}
+		{346E77A4-C1A6-42F5-AEDD-C69253182F5F} = {38924FB5-544E-4224-84DF-44A980469583}
 	EndGlobalSection
 EndGlobal
