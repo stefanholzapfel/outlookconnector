@@ -64,16 +64,16 @@ namespace CaldavConnector
             headers.Add("Prefer", "return-minimal");
             XmlDocument ResponseXmlDoc;
             string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
-            "<d:prop>" +
-            "<d:getetag />" +
-            "<c:calendar-data />" +
-            "</d:prop>" +
-            "<c:filter>" +
-            "<c:comp-filter name=\"VCALENDAR\">" +
-            "<c:comp-filter name=\"VEVENT\" />" +
-            "</c:comp-filter>" +
-            "</c:filter>" +
-            "</c:calendar-query>";
+                                "<d:prop>" +
+                                    "<d:getetag />" +
+                                    "<c:calendar-data />" +
+                                "</d:prop>" +
+                                "<c:filter>" +
+                                    "<c:comp-filter name=\"VCALENDAR\">" +
+                                    "   <c:comp-filter name=\"VEVENT\" />" +
+                                    "</c:comp-filter>" +
+                                "</c:filter>" +
+                            "</c:calendar-query>";
             ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
             List<CalDavElement> responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
             AppointmentSyncCollection responseList = new AppointmentSyncCollection();
