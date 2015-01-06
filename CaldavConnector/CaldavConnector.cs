@@ -55,7 +55,7 @@ namespace CaldavConnector
         /// <returns>A collection of all appointments on serverside.</returns>
         public AppointmentSyncCollection GetInitialSync()
         {
-            _localStorage.rebuildDatabase();
+            _localStorage.RebuildDatabase();
 
             System.IO.Stream ResponseStream;
             System.Xml.XmlDocument ResponseXmlDoc;
@@ -96,7 +96,7 @@ namespace CaldavConnector
             AppointmentSyncCollection responseList = new AppointmentSyncCollection();
             responseListCalDav.ForEach(delegate(CalDavElement element)
             {
-                _localStorage.writeEntry(element.Guid, element.CTag, element.Url);
+                _localStorage.WriteEntry(element.Guid, element.CTag, element.Url);
                 responseList.AddList.Add(IcsToAppointmentItemConverter.Convert(element));
             });
 
