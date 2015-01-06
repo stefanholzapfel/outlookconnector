@@ -14,7 +14,7 @@ namespace OutlookAddIn
 
     {
         private String choosenConnector;
-        private String path = @".\Connectors";
+        private String path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Microsoft\Outlook\OutlookConnector\Connectors";
         [ImportMany(typeof(ICalendarSyncable))]
         public List<ICalendarSyncable> MefCalendarConnectors { get; set; }
 

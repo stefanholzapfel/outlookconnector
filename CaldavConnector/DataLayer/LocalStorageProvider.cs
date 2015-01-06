@@ -10,8 +10,8 @@ namespace CaldavConnector.DataLayer
 {
     public class LocalStorageProvider
     {
-        private static String filepath = "Data/CalDavConnectorCache.sqlite";
-        private static String foldername = "Data";
+        private static String filepath = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Microsoft\Outlook\OutlookConnector\Data\CalDavConnectorCache.sqlite";
+        private static String foldername = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Microsoft\Outlook\OutlookConnector\Data";
         Dictionary<String, String[]> localCache;
         SQLiteConnection myConnection;
 
