@@ -14,6 +14,7 @@ namespace OutlookAddIn
 {
     public partial class ConfigManagerUI : Form
     {
+        
         ConfigurationManager confManager;
         Config conf = new Config();
 
@@ -28,23 +29,21 @@ namespace OutlookAddIn
         private string URL;
         private int updateInterval;
         private byte synced;
-
+        
         public ConfigManagerUI(ConfigurationManager _configManager)
-        {
-            confManager = _configManager;
+        {           
             InitializeComponent();
-
-            availableConnectors = conHan.GetAvailableConnectors();
+            confManager = _configManager;
             conf = confManager.GetConfig();
-
+            
+            availableConnectors = conHan.GetAvailableConnectors();                       
             foreach (var item in availableConnectors)
             {
                 cbo_Connector.Items.Add(item);
             }
-            cbo_Connector.Items.Add("Test");
-
+            
             if (conf != null)
-            {               
+            {                
                 userName = conf.userName;
                 synced = conf.synced;
                 txt_Username.Text = userName;
@@ -57,10 +56,10 @@ namespace OutlookAddIn
                 updateInterval = conf.updateInterval;
                 txt_UpdateInterval.Text = updateInterval.ToString();
                 password = confManager.GetPassword();
-                txt_Password.Text = password;
-                
+                txt_Password.Text = password;                
             }           
         }
+
         private void btn_Reset_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Do you really want to reset the synchronization?", "Reset Synchronization", MessageBoxButtons.YesNo);
