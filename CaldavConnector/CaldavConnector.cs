@@ -107,11 +107,18 @@ namespace CaldavConnector
             string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
                                 "<d:prop>" +
                                     "<d:getetag />" +
-                                    "<c:calendar-data />" +
+                                    "<c:calendar-data>" +
+                                        "<c:comp name=\"VCALENDAR\">" +
+                                            "<c:prop name=\"VERSION\"/>" +
+                                            "<c:comp name=\"VEVENT\">" +
+                                                "<c:prop name=\"UID\"/>" +
+                                            "</c:comp>" +
+                                        "</c:comp>" +
+                                    "</c:calendar-data>" +
                                 "</d:prop>" +
                                 "<c:filter>" +
                                     "<c:comp-filter name=\"VCALENDAR\">" +
-                                    "   <c:comp-filter name=\"VEVENT\" />" +
+                                        "<c:comp-filter name=\"VEVENT\" />" +
                                     "</c:comp-filter>" +
                                 "</c:filter>" +
                             "</c:calendar-query>";
