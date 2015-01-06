@@ -14,6 +14,8 @@ namespace CaldavConnector.Converter
         {
             if (string.IsNullOrEmpty(value))
                 return null;
+            if (!value.Contains("T"))
+                value += "T000000";
             DateTime ret;
             var match = rxDate.Match(value);
             if (match.Success)
