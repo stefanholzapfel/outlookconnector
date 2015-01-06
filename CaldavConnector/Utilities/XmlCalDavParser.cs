@@ -37,11 +37,14 @@ namespace CaldavConnector.Utilities
                         if (specificParameter[0].ToUpper().StartsWith("LOCATION") && specificParameter[1] != null) myElement.Location = specificParameter[1];
                         if (specificParameter[0].ToUpper().StartsWith("DTSTART") && specificParameter[1] != null)
                         {
-                            myElement.Start = StringToDateTimeConverter.Convert(specificParameter[1]);
                             if (specificParameter[1].Contains("T"))
                                 myElement.AllDayEvent = false;
                             else
+                            {
                                 myElement.AllDayEvent = true;
+                                specificParameter[1] = specificParameter[1] + "T000000";
+                            }
+                            myElement.Start = StringToDateTimeConverter.Convert(specificParameter[1]);
                         }
                         if (specificParameter[0].ToUpper().StartsWith("DTEND") && specificParameter[1] != null) myElement.End = StringToDateTimeConverter.Convert(specificParameter[1]);
 
