@@ -94,7 +94,47 @@ namespace CaldavConnector
         /// <returns>A collection with all new, updated and deleted items on serverside.</returns>
         public AppointmentSyncCollection GetUpdates()
         {
-            Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
+            List<CalDavElement> newElements = new List<CalDavElement>();
+            List<CalDavElement> modifiedElements = new List<CalDavElement>();
+            List<CalDavElement> deletedElements = new List<CalDavElement>();
+
+            WebHeaderCollection headers = new WebHeaderCollection();
+            headers.Add("Depth", "1");
+            headers.Add("Prefer", "return-minimal");
+            XmlDocument ResponseXmlDoc;
+            string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
+                                "<d:prop>" +
+                                    "<d:getetag />" +
+                                "</d:prop>" +
+                                "<c:filter>" +
+                                    "<c:comp-filter name=\"VCALENDAR\">" +
+                                    "   <c:comp-filter name=\"VEVENT\" />" +
+                                    "</c:comp-filter>" +
+                                "</c:filter>" +
+                            "</c:calendar-query>";
+            ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
+
+            List<CalDavElement> responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
+            responseListCalDav.ForEach(delegate(CalDavElement element)
+            {
+                String foundETag = _localStorage.FindEntry(element.Guid);
+                if (foundETag == null)
+                {
+                    newElements.Add(element);
+                    _localStorage.WriteEntry(element.Guid, element.ETag, element.Url);
+                }
+                else if (foundETag != element.ETag)
+                {
+                    modifiedElements.Add(element);
+                    _localStorage.EditETag(element.Guid, element.ETag);
+                }
+            });
+            foreach (var item in _localStorage.GetAll())
+            {
+                if responseListCalDav.Contains()
+            }
+
+
             return new Shared.AppointmentSyncCollection();
         }
 

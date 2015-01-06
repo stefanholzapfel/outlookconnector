@@ -17,7 +17,7 @@ namespace ConsoleTest
             myHandler.ChooseConnector("CaldavConnector");
             myHandler.Settings = new ConnectorSettings("fst5", "fst5", "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5");
 
-            AppointmentSyncCollection test = myHandler.GetInitialSync();
+            AppointmentSyncCollection test = myHandler.GetUpdates();
 
             Console.ReadLine();
         }

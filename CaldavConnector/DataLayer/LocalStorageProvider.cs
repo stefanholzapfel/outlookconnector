@@ -23,11 +23,11 @@ namespace CaldavConnector.DataLayer
             myConnection = new SQLiteConnection("Data Source=" + filepath + ";Version=3;");
             if (!File.Exists(filepath))
                 RebuildDatabase();
-            localCache = ExecuteQuery("SELECT * FROM localCTagCache order by Guid desc");
+            localCache = ExecuteQuery("SELECT * FROM localETagCache order by Guid desc");
         }
 
         /// <summary>
-        /// Creates a new SQLite database for local cache storage of Guids and CTags 
+        /// Creates a new SQLite database for local cache storage of Guids and ETags 
         /// for CalDAV synchronization. If the database already exists, it will 
         /// be overwritten.
         /// </summary>
@@ -42,7 +42,7 @@ namespace CaldavConnector.DataLayer
                 Directory.CreateDirectory(foldername);
             SQLiteConnection.CreateFile(filepath);
             myConnection = new SQLiteConnection("Data Source=" + filepath + ";Version=3;");
-            ExecuteNonQuery("CREATE TABLE localCTagCache (Guid VARCHAR(100), CTag VARCHAR(100), Url VARCHAR(100))");
+            ExecuteNonQuery("CREATE TABLE localETagCache (Guid VARCHAR(100), ETag VARCHAR(100), Url VARCHAR(100))");
         }
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace CaldavConnector.DataLayer
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <param name="Guid">The Guid to look up.</param>
-        /// <returns>The matching CTag for the given Guid or null if nothing found.</returns>
-        public String[] FindEntry(String Guid) {
+        /// <returns>The matching ETag for the given Guid or null if nothing found.</returns>
+        public String FindEntry(String Guid) {
             String[] temp = null;
             if (localCache.ContainsKey(Guid))
                 temp = localCache[Guid];
-            return temp;
+            return temp[0];
         }
 
         /// <summary>
@@ -63,22 +63,22 @@ namespace CaldavConnector.DataLayer
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <returns>Dictionary of all entries</returns>
-        public Dictionary<String, String[]> getAll()
+        public Dictionary<String, String[]> GetAll()
         {
             return localCache;
         }
 
 
         /// <summary>
-        /// Edit the CTag of an existing entry.
+        /// Edit the ETag of an existing entry.
         /// </summary>
         /// <param name="Guid">Guid of entry to edit.</param>
-        /// <param name="CTag">New value for CTag</param>
-        public void EditCTag(String Guid, String CTag) {
+        /// <param name="ETag">New value for ETag</param>
+        public void EditETag(String Guid, String ETag) {
             if (localCache.ContainsKey(Guid))
             {
-                localCache[Guid][0] = CTag;
-                ExecuteNonQuery("UPDATE localCTagCache SET CTag ='"+CTag+"' WHERE Guid='"+Guid+"'");
+                localCache[Guid][0] = ETag;
+                ExecuteNonQuery("UPDATE localETagCache SET ETag ='"+ETag+"' WHERE Guid='"+Guid+"'");
             }
         }
 
@@ -87,13 +87,13 @@ namespace CaldavConnector.DataLayer
         /// present.
         /// </summary>
         /// <param name="Guid">Guid to add.</param>
-        /// <param name="CTag">CTag to add.</param>
+        /// <param name="ETag">ETag to add.</param>
         /// <param name="Url">Url to add</param>
-        public void WriteEntry(String Guid, String CTag, String Url) {
+        public void WriteEntry(String Guid, String ETag, String Url) {
             if (!localCache.ContainsKey(Guid))
             {
-                localCache.Add(Guid, new String[] {CTag, Url});
-                ExecuteNonQuery("INSERT INTO localCTagCache (Guid, CTag, Url) values ('" + Guid + "', '" + CTag + "', '" + Url + "')");
+                localCache.Add(Guid, new String[] {ETag, Url});
+                ExecuteNonQuery("INSERT INTO localETagCache (Guid, ETag, Url) values ('" + Guid + "', '" + ETag + "', '" + Url + "')");
             }
         }
 
@@ -105,10 +105,9 @@ namespace CaldavConnector.DataLayer
             if (localCache.ContainsKey(Guid))
             {
                 localCache.Remove(Guid);
-                ExecuteNonQuery("DELETE FROM localCTagCache WHERE Guid="+ Guid);
+                ExecuteNonQuery("DELETE FROM localETagCache WHERE Guid="+ Guid);
             }
         }
-
 
         /// <summary>
         /// Helper method that executes a query against the database 
@@ -139,7 +138,7 @@ namespace CaldavConnector.DataLayer
             SQLiteCommand command = new SQLiteCommand(query, myConnection);
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
-                tempDictionary.Add(reader["Guid"].ToString(), new String[] { reader["CTag"].ToString(), reader["Url"].ToString() });
+                tempDictionary.Add(reader["Guid"].ToString(), new String[] { reader["ETag"].ToString(), reader["Url"].ToString() });
             myConnection.Close();
             return tempDictionary;
         }
