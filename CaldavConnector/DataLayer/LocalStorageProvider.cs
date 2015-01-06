@@ -42,7 +42,7 @@ namespace CaldavConnector.DataLayer
                 Directory.CreateDirectory(foldername);
             SQLiteConnection.CreateFile(filepath);
             myConnection = new SQLiteConnection("Data Source=" + filepath + ";Version=3;");
-            ExecuteNonQuery("CREATE TABLE localETagCache (Guid VARCHAR(100), ETag VARCHAR(100), Url VARCHAR(100))");
+            ExecuteNonQuery("CREATE TABLE localETagCache (Guid VARCHAR(100), ETag VARCHAR(100), Url VARCHAR(255))");
         }
 
         /// <summary>
@@ -53,9 +53,12 @@ namespace CaldavConnector.DataLayer
         /// <returns>The matching ETag for the given Guid or null if nothing found.</returns>
         public String FindEntry(String Guid) {
             String[] temp = null;
-            if (localCache.ContainsKey(Guid))
+            if (Guid != null && localCache.ContainsKey(Guid))
                 temp = localCache[Guid];
-            return temp[0];
+            if (temp == null)
+                return null;
+            else
+                return temp[0];
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace CaldavConnector.DataLayer
             if (localCache.ContainsKey(Guid))
             {
                 localCache.Remove(Guid);
-                ExecuteNonQuery("DELETE FROM localETagCache WHERE Guid="+ Guid);
+                ExecuteNonQuery("DELETE FROM localETagCache WHERE Guid='" + Guid + "'");
             }
         }
 

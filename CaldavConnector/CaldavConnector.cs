@@ -96,15 +96,18 @@ namespace CaldavConnector
         {
             List<CalDavElement> newElements = new List<CalDavElement>();
             List<CalDavElement> modifiedElements = new List<CalDavElement>();
-            List<CalDavElement> deletedElements = new List<CalDavElement>();
+
+            AppointmentSyncCollection returnCollection = new AppointmentSyncCollection();
 
             WebHeaderCollection headers = new WebHeaderCollection();
             headers.Add("Depth", "1");
             headers.Add("Prefer", "return-minimal");
             XmlDocument ResponseXmlDoc;
+            // NEEDS TO BE ADOPTED TO QUERY ONLY GUID!!!!!
             string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
                                 "<d:prop>" +
                                     "<d:getetag />" +
+                                    "<c:calendar-data />" +
                                 "</d:prop>" +
                                 "<c:filter>" +
                                     "<c:comp-filter name=\"VCALENDAR\">" +
@@ -129,13 +132,31 @@ namespace CaldavConnector
                     _localStorage.EditETag(element.Guid, element.ETag);
                 }
             });
-            foreach (var item in _localStorage.GetAll())
+            Boolean deleted;
+            OutlookAppointment deletedAppointment = new OutlookAppointment();
+            List<String> guidsToDelete = new List<String>();
+            foreach (var localitem in _localStorage.GetAll())
             {
-                if responseListCalDav.Contains()
+                deleted = true;
+                foreach (var remoteitem in responseListCalDav)
+                {
+                    if (remoteitem.Guid.Equals(localitem.Key))
+                        deleted = false;
+                }
+                if (deleted)
+                {  
+                    deletedAppointment.GlobalAppointmentID = localitem.Key;
+                    returnCollection.DeleteList.Add(deletedAppointment);
+                    guidsToDelete.Add(localitem.Key);
+                }         
+            }
+            foreach (var item in guidsToDelete)
+            {
+                _localStorage.DeleteEntry(item);
             }
 
 
-            return new Shared.AppointmentSyncCollection();
+            return returnCollection;
         }
 
         public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
