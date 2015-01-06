@@ -8,7 +8,7 @@ namespace CaldavConnector.Model
 {
     public class CalDavElement
     {
-        public String CTag { get; set; }
+        public String ETag { get; set; }
         public String Guid { get; set; }
         public String Url { get; set; }
 

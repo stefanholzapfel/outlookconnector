@@ -51,7 +51,7 @@ namespace CaldavConnector
 
         /// <summary>
         /// Drops an existing database, creates a new one, fetches all ics elements from server, 
-        /// writes their etags and uid to the database, converts the ics to Outlook Appointments 
+        /// writes their ctags, uid and url to the database, converts the ics to Outlook Appointments 
         /// and returns them.
         /// </summary>
         /// <returns>A collection of all appointments on serverside.</returns>
@@ -61,10 +61,6 @@ namespace CaldavConnector
 
             System.IO.Stream ResponseStream;
             System.Xml.XmlDocument ResponseXmlDoc;
-
-            //string uri = "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5";
-            //string uName = "fst5";
-            //string uPasswd = "fst5";
 
             WebHeaderCollection headers = new WebHeaderCollection();
             headers.Add("Depth", "1");
@@ -98,7 +94,7 @@ namespace CaldavConnector
             AppointmentSyncCollection responseList = new AppointmentSyncCollection();
             responseListCalDav.ForEach(delegate(CalDavElement element)
             {
-                _localStorage.WriteEntry(element.Guid, element.CTag, element.Url);
+                _localStorage.WriteEntry(element.Guid, element.ETag, element.Url);
                 responseList.AddList.Add(IcsToAppointmentItemConverter.Convert(element));
             });
 
@@ -106,9 +102,11 @@ namespace CaldavConnector
         }
 
         /// <summary>
-        /// 
+        /// Asks the server for a list of all etags, compares them to the local database and 
+        /// then asks the server for new, updated and deleted items as full ics items. Ics items
+        /// are converted to Outlook Appointments and returned.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection with all new, updated and deleted items on serverside.</returns>
         public AppointmentSyncCollection GetUpdates()
         {
             Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
@@ -119,5 +117,6 @@ namespace CaldavConnector
         {
             throw new NotImplementedException();
         }
+
     }
 }
