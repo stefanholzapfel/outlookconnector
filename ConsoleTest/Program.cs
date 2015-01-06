@@ -12,6 +12,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectorHandler myHandler = new ConnectorHandler();
 
             myHandler.ChooseConnector("CaldavConnector");

@@ -87,8 +87,8 @@ namespace CaldavConnector.DataLayer
         /// present.
         /// </summary>
         /// <param name="Guid">Guid to add.</param>
-        /// <param name="Etag">CTag to add.</param>
-        /// 
+        /// <param name="CTag">CTag to add.</param>
+        /// <param name="Url">Url to add</param>
         public void WriteEntry(String Guid, String CTag, String Url) {
             if (!localCache.ContainsKey(Guid))
             {
