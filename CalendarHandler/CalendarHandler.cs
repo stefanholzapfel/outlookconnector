@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using ConfigManager;
+using Shared;
 using Shared.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace OutlookAddIn
@@ -16,17 +16,21 @@ namespace OutlookAddIn
         private Outlook.Application _outlookApp;
         private Outlook.MAPIFolder _primaryCalendar;
         private Outlook.MAPIFolder _customCalendar;
+        private String _calendarName;
 
-        // TODO: to be retrieved from local storage
-        private List<String> _tempDeleteStorage = new List<string>();
-        private DateTime _tempLastSyncTime = DateTime.MinValue;
+        private SyncDataStorage _syncStorage;
 
-        // TODO: to be retrieved from configuration
-        private const String CALENDAR_NAME = "Caldav Calendar";
+        public class SyncDataStorage
+        {
+            public List<String> DeletedItems = new List<string>();
+            public DateTime LastSyncTime = DateTime.MinValue;
+        }
+
+        private const String SYNCSTORAGE_FILENAME = "OutlookSyncStorage";
 
         public String ConnectorName
         {
-            get { return CALENDAR_NAME; }
+            get { return _calendarName; }
         }
 
         public ConnectorSettings Settings
@@ -39,9 +43,10 @@ namespace OutlookAddIn
         /// Initializes the CalendarHandler
         /// </summary>
         /// <param name="outlookApp">reference to the active Outlook application</param>
-        public CalendarHandler(Outlook.Application outlookApp)
+        public CalendarHandler(Outlook.Application outlookApp, String calendarName)
         {
             this._outlookApp = outlookApp;
+            this._calendarName = calendarName;
             Initialize();
         }
 
@@ -55,7 +60,7 @@ namespace OutlookAddIn
             // check if the custom calendar already exists
             foreach (Outlook.MAPIFolder calendar in _primaryCalendar.Folders)
             {
-                if (calendar.Name == CALENDAR_NAME)
+                if (calendar.Name == _calendarName)
                 {
                     _customCalendar = calendar;
                     break;
@@ -63,6 +68,28 @@ namespace OutlookAddIn
             }
 
             if (_customCalendar != null) SetEvents();
+
+            LoadLocalStorage();
+            // there is no local sync storage yet, so we start a new one
+            if (_syncStorage == null) _syncStorage = new SyncDataStorage();
+        }
+
+        /// <summary>
+        /// Loads the SyncDataStorage from the local storage file
+        /// </summary>
+        private void LoadLocalStorage()
+        {
+            FileManager fileManager = new FileManager();
+            _syncStorage = fileManager.LoadXML<SyncDataStorage>(SYNCSTORAGE_FILENAME);
+        }
+
+        /// <summary>
+        /// Saves the SyncDataStorage into the local storage file
+        /// </summary>
+        private void SaveToLocalStorage()
+        {
+            FileManager fileManager = new FileManager();
+            fileManager.SaveXML<SyncDataStorage>(_syncStorage, SYNCSTORAGE_FILENAME);
         }
 
         /// <summary>
@@ -75,7 +102,7 @@ namespace OutlookAddIn
             try
             {
                 // create new calendar
-                _customCalendar = _primaryCalendar.Folders.Add(CALENDAR_NAME, Outlook.OlDefaultFolders.olFolderCalendar);
+                _customCalendar = _primaryCalendar.Folders.Add(_calendarName, Outlook.OlDefaultFolders.olFolderCalendar);
 
                 // add the new custom calendar to the navigation panel
                 Outlook.NavigationPane objPane = _outlookApp.ActiveExplorer().NavigationPane;
@@ -379,7 +406,7 @@ namespace OutlookAddIn
         /// <returns>list of SyncIDs</returns>
         private List<String> GetAppointmentsForDeleting()
         {
-            return _tempDeleteStorage;
+            return _syncStorage.DeletedItems;
         }
 
         /// <summary>
@@ -390,7 +417,9 @@ namespace OutlookAddIn
         {
             // only synced items need to be remembered
             if (item != null && item.ItemProperties["SyncID"] != null)
-                _tempDeleteStorage.Add(item.ItemProperties["SyncID"].Value);
+                _syncStorage.DeletedItems.Add(item.ItemProperties["SyncID"].Value);
+
+            SaveToLocalStorage();
         }
 
         /// <summary>
@@ -398,22 +427,25 @@ namespace OutlookAddIn
         /// </summary>
         private void ResetDeleteStorage()
         {
-            _tempDeleteStorage.Clear();
+            _syncStorage.DeletedItems.Clear();
+            SaveToLocalStorage();
         }
 
         private DateTime GetLastSyncTime()
         {
-            return _tempLastSyncTime;
+            return _syncStorage.LastSyncTime;
         }
 
         private void SetSyncTime(DateTime time)
         {
-            _tempLastSyncTime = time;
+            _syncStorage.LastSyncTime = time;
+            SaveToLocalStorage();
         }
 
         private void ResetSyncTime()
         {
-            _tempLastSyncTime = DateTime.MinValue;
+            _syncStorage.LastSyncTime = DateTime.MinValue;
+            SaveToLocalStorage();
         }
 
         /// <summary>

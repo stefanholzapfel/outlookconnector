@@ -47,6 +47,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConfigManager\ConfigManager.csproj">
+      <Project>{5d19b642-c4aa-4f64-9108-693c22fb81a8}</Project>
+      <Name>ConfigManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{04a7f31b-24d4-4c96-9623-12419ed39c6b}</Project>
       <Name>Shared</Name>

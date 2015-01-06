@@ -18,13 +18,14 @@ namespace OutlookAddIn
         CalendarHandler _calHandler;
         SyncService _synService = new SyncService(null, null, 1000);
         String _syncID = "1";
+        String _calendarName = "Caldav Calendar";
         DateTime _syncTime = DateTime.Now;
         ConfigurationManager _confManager = new ConfigurationManager();
 
 
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {
-            _calHandler = new CalendarHandler(Globals.ThisAddIn.Application);
+            _calHandler = new CalendarHandler(Globals.ThisAddIn.Application, _calendarName);
         }
 
         private void btn_CreateCalendar_Click(object sender, RibbonControlEventArgs e)
