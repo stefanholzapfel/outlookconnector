@@ -27,6 +27,8 @@ namespace CaldavConnector
 
         public CaldavConnector()
         {
+            //Deactivate certificate validation
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             _localStorage = new LocalStorageProvider();
         }
 
