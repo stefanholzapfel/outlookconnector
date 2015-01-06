@@ -14,13 +14,13 @@ using ConfigManager;
 namespace OutlookAddIn
 {
     public partial class SyncRibbon
-    {
+    {        
         CalendarHandler _calHandler;
         SyncService _synService = new SyncService(null, null, 1000);
         String _syncID = "1";
         String _calendarName = "Caldav Calendar";
         DateTime _syncTime = DateTime.Now;
-        ConfigurationManager _confManager = new ConfigurationManager();
+        ConfigurationManager _confManager = new ConfigurationManager();        
 
 
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
@@ -149,9 +149,9 @@ namespace OutlookAddIn
         }
 
         private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
-        {
-            ConfigManagerUI formMain = new ConfigManagerUI(_confManager);
-            formMain.ShowDialog();
+        {                        
+            ConfigManagerUI formConfigManager = new ConfigManagerUI(_confManager);              
+            formConfigManager.ShowDialog();           
         }
     }
 }
