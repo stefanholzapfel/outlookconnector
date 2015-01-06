@@ -48,10 +48,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CaldavConnector\CaldavConnector.csproj">
-      <Project>{3924a554-458d-431c-ac31-6e2200171ed3}</Project>
-      <Name>CaldavConnector</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CalendarHandler\CalendarHandler.csproj">
       <Project>{00c4f372-bfbe-4a97-b079-01c6663b250b}</Project>
       <Name>CalendarHandler</Name>

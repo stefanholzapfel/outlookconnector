@@ -117,6 +117,8 @@ namespace CaldavConnector
                             "</c:calendar-query>";
             ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
 
+            String modifiedQuery = "";
+            String newQuery = "";
             List<CalDavElement> responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
             responseListCalDav.ForEach(delegate(CalDavElement element)
             {
@@ -124,11 +126,13 @@ namespace CaldavConnector
                 if (foundETag == null)
                 {
                     newElements.Add(element);
+                    newQuery += "<d:href>" + element.Url + "</d:href>";
                     _localStorage.WriteEntry(element.Guid, element.ETag, element.Url);
                 }
                 else if (foundETag != element.ETag)
                 {
                     modifiedElements.Add(element);
+                    modifiedQuery += "<d:href>" + element.Url + "</d:href>";
                     _localStorage.EditETag(element.Guid, element.ETag);
                 }
             });
@@ -145,7 +149,7 @@ namespace CaldavConnector
                 }
                 if (deleted)
                 {  
-                    deletedAppointment.GlobalAppointmentID = localitem.Key;
+                    deletedAppointment.SyncID = localitem.Key;
                     returnCollection.DeleteList.Add(deletedAppointment);
                     guidsToDelete.Add(localitem.Key);
                 }         
@@ -155,6 +159,41 @@ namespace CaldavConnector
                 _localStorage.DeleteEntry(item);
             }
 
+            // Fetching modified entries from server
+            if (!modifiedQuery.Equals(""))
+            {
+                query = "<c:calendar-multiget xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
+                    "<d:prop>" +
+                        "<d:getetag />" +
+                        "<c:calendar-data />" +
+                    "</d:prop>" +
+                    modifiedQuery +
+                "</c:calendar-multiget>";
+                ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
+                responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
+                foreach (var item in responseListCalDav)
+                {
+                    returnCollection.UpdateList.Add(IcsToAppointmentItemConverter.Convert(item));
+                }
+            }
+
+            // Fetching new entries from server
+            if (!newQuery.Equals(""))
+            {
+                query = "<c:calendar-multiget xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
+                    "<d:prop>" +
+                        "<d:getetag />" +
+                        "<c:calendar-data />" +
+                    "</d:prop>" +
+                    newQuery +
+                "</c:calendar-multiget>";
+                ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
+                responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
+                foreach (var item in responseListCalDav)
+                {
+                    returnCollection.AddList.Add(IcsToAppointmentItemConverter.Convert(item));
+                }
+            }
 
             return returnCollection;
         }
