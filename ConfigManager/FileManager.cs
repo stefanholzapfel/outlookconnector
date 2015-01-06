@@ -10,7 +10,8 @@ namespace ConfigManager
 {
     public class FileManager
     {
-        private static string path = @"C:\Users\"+Environment.UserName+@"\AppData\Roaming\Microsoft\Outlook\OutlookConnector\";
+        
+        private static string path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData)+@"\Microsoft\Outlook\OutlookConnector\";
         /// <summary>
         /// XML Serializer to save a generic object.
         /// </summary>
