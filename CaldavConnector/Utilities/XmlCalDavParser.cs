@@ -23,7 +23,7 @@ namespace CaldavConnector.Utilities
             {
                 CalDavElement myElement = new CalDavElement();
                 if (xnode.SelectSingleNode("*[local-name()='href']") != null) myElement.Url = xnode.SelectSingleNode("*[local-name()='href']").InnerText;
-                if (xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='getetag']") != null) myElement.CTag = xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='getetag']").InnerText;
+                if (xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='getetag']") != null) myElement.ETag = xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='getetag']").InnerText;
                 if (xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='calendar-data']") != null)
                 {
                     string[] parameters = xnode.SelectSingleNode("*[local-name()='propstat']/*[local-name()='prop']/*[local-name()='calendar-data']").InnerText.Split(new char[] { '\n' });

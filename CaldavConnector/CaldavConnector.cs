@@ -51,13 +51,21 @@ namespace CaldavConnector
 
         /// <summary>
         /// Drops an existing database, creates a new one, fetches all ics elements from server, 
-        /// writes their etags and uid to the database, converts the ics to Outlook Appointments 
+        /// writes their ctags, uid and url to the database, converts the ics to Outlook Appointments 
         /// and returns them.
         /// </summary>
         /// <returns>A collection of all appointments on serverside.</returns>
         public AppointmentSyncCollection GetInitialSync()
         {
             _localStorage.RebuildDatabase();
+
+            System.IO.Stream ResponseStream;
+            System.Xml.XmlDocument ResponseXmlDoc;
+
+            //string uri = "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5";
+            //string uName = "fst5";
+            //string uPasswd = "fst5";
+
             WebHeaderCollection headers = new WebHeaderCollection();
             headers.Add("Depth", "1");
             headers.Add("Prefer", "return-minimal");
@@ -74,12 +82,12 @@ namespace CaldavConnector
                                 "</c:filter>" +
                             "</c:calendar-query>";
             ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
-           
+
             List<CalDavElement> responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
             AppointmentSyncCollection responseList = new AppointmentSyncCollection();
             responseListCalDav.ForEach(delegate(CalDavElement element)
             {
-                _localStorage.WriteEntry(element.Guid, element.CTag, element.Url);
+                _localStorage.WriteEntry(element.Guid, element.ETag, element.Url);
                 responseList.AddList.Add(IcsToAppointmentItemConverter.Convert(element));
             });
 
@@ -87,9 +95,11 @@ namespace CaldavConnector
         }
 
         /// <summary>
-        /// 
+        /// Asks the server for a list of all etags, compares them to the local database and 
+        /// then asks the server for new, updated and deleted items as full ics items. Ics items
+        /// are converted to Outlook Appointments and returned.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection with all new, updated and deleted items on serverside.</returns>
         public AppointmentSyncCollection GetUpdates()
         {
             Console.WriteLine("Get updates CalDav executed from: " + this.GetType().Name);
@@ -99,31 +109,6 @@ namespace CaldavConnector
         public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
         {
             throw new NotImplementedException();
-        }
-
-        private XmlDocument QueryCaldavServer(String requestMethod, WebHeaderCollection headers, String query, String contentType)
-        {
-            System.IO.Stream ResponseStream;
-            System.Xml.XmlDocument ResponseXmlDoc;
-
-            
-            HttpWebRequest CaldavRequest = (HttpWebRequest)WebRequest.Create(CalendarUrl);
-            CaldavRequest.Method = requestMethod;
-            CaldavRequest.Credentials = new NetworkCredential(Username, Password);
-            CaldavRequest.PreAuthenticate = true;
-            CaldavRequest.Headers = headers;
-            CaldavRequest.ContentType = contentType;
-            byte[] optionsArray = Encoding.UTF8.GetBytes(query);
-            CaldavRequest.ContentLength = optionsArray.Length;
-            System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
-            requestStream.Write(optionsArray, 0, optionsArray.Length);
-            requestStream.Close();
-            HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
-            ResponseStream = ReportResponse.GetResponseStream();
-            ResponseXmlDoc = new XmlDocument();
-            ResponseXmlDoc.Load(ResponseStream);
-
-            return ResponseXmlDoc;
         }
     }
 }
