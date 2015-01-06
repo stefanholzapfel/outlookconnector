@@ -51,7 +51,7 @@ namespace CaldavConnector
 
         /// <summary>
         /// Drops an existing database, creates a new one, fetches all ics elements from server, 
-        /// writes their ctags, uid and url to the database, converts the ics to Outlook Appointments 
+        /// writes their etags, uid and url to the database, converts the ics to Outlook Appointments 
         /// and returns them.
         /// </summary>
         /// <returns>A collection of all appointments on serverside.</returns>
@@ -59,30 +59,22 @@ namespace CaldavConnector
         {
             _localStorage.RebuildDatabase();
 
-            System.IO.Stream ResponseStream;
-            System.Xml.XmlDocument ResponseXmlDoc;
-
-            //string uri = "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5";
-            //string uName = "fst5";
-            //string uPasswd = "fst5";
-
             WebHeaderCollection headers = new WebHeaderCollection();
             headers.Add("Depth", "1");
             headers.Add("Prefer", "return-minimal");
             XmlDocument ResponseXmlDoc;
             string query = "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" +
-                                "<d:prop>" +
-                                    "<d:getetag />" +
-                                    "<c:calendar-data />" +
-                                "</d:prop>" +
-                                "<c:filter>" +
-                                    "<c:comp-filter name=\"VCALENDAR\">" +
-                                        "<c:comp-filter name=\"VEVENT\" />" +
-                                    "</c:comp-filter>" +
-                                "</c:filter>" +
-                            "</c:calendar-query>";
+            "<d:prop>" +
+            "<d:getetag />" +
+            "<c:calendar-data />" +
+            "</d:prop>" +
+            "<c:filter>" +
+            "<c:comp-filter name=\"VCALENDAR\">" +
+            "<c:comp-filter name=\"VEVENT\" />" +
+            "</c:comp-filter>" +
+            "</c:filter>" +
+            "</c:calendar-query>";
             ResponseXmlDoc = this.QueryCaldavServer("REPORT", headers, query, "application/xml");
-
             List<CalDavElement> responseListCalDav = XmlCalDavParser.Parse(ResponseXmlDoc);
             AppointmentSyncCollection responseList = new AppointmentSyncCollection();
             responseListCalDav.ForEach(delegate(CalDavElement element)
@@ -109,6 +101,28 @@ namespace CaldavConnector
         public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
         {
             throw new NotImplementedException();
+        }
+
+        private XmlDocument QueryCaldavServer(String requestMethod, WebHeaderCollection headers, String query, String contentType)
+        {
+            System.IO.Stream ResponseStream;
+            System.Xml.XmlDocument ResponseXmlDoc;
+            HttpWebRequest CaldavRequest = (HttpWebRequest)WebRequest.Create(CalendarUrl);
+            CaldavRequest.Method = requestMethod;
+            CaldavRequest.Credentials = new NetworkCredential(Username, Password);
+            CaldavRequest.PreAuthenticate = true;
+            CaldavRequest.Headers = headers;
+            CaldavRequest.ContentType = contentType;
+            byte[] optionsArray = Encoding.UTF8.GetBytes(query);
+            CaldavRequest.ContentLength = optionsArray.Length;
+            System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
+            requestStream.Write(optionsArray, 0, optionsArray.Length);
+            requestStream.Close();
+            HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
+            ResponseStream = ReportResponse.GetResponseStream();
+            ResponseXmlDoc = new XmlDocument();
+            ResponseXmlDoc.Load(ResponseStream);
+            return ResponseXmlDoc;
         }
     }
 }
