@@ -15,6 +15,7 @@ namespace SyncLogic
         private ICalendarSyncable _syncSecondary;
         private Timer _syncThread = new Timer();
         private bool _isStarted = false;
+        private bool _isRunning = false;
 
         /// <summary>
         /// minimum interval time
@@ -80,7 +81,13 @@ namespace SyncLogic
 
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Synchronize();
+            // checking if another sync thread is already running
+            if (!_isRunning)
+            {
+                _isRunning = true;
+                Synchronize();
+                _isRunning = false;
+            }
         }
 
         /// <summary>
