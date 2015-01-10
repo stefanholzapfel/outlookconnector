@@ -43,6 +43,10 @@
     <Compile Include="SyncService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CalendarHandler\CalendarHandler.csproj">
+      <Project>{00c4f372-bfbe-4a97-b079-01c6663b250b}</Project>
+      <Name>CalendarHandler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{04a7f31b-24d4-4c96-9623-12419ed39c6b}</Project>
       <Name>Shared</Name>

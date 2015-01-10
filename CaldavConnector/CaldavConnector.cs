@@ -13,6 +13,7 @@ using CaldavConnector.Model;
 using CaldavConnector.Converter;
 using CaldavConnector.Utilities;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace CaldavConnector
 {
@@ -142,6 +143,7 @@ namespace CaldavConnector
                         this.QueryCaldavServer("DELETE", new WebHeaderCollection(), "", null, _localStorage.FindUrl(deleteItem.SyncID));
                     } catch(WebException e) {
                         Debug.WriteLine(e.Message);
+                        MessageBox.Show("The following error occurred: " + e.Message);
                     }
                     _localStorage.DeleteEntry(deleteItem.SyncID);
                 }
@@ -159,6 +161,7 @@ namespace CaldavConnector
                     catch (WebException e)
                     {
                         Debug.WriteLine(e.Message);
+                        MessageBox.Show("The following error occurred: " + e.Message);
                     }
                     _localStorage.EditETag(updateItem.SyncID, GetSingleItemFromServer(_localStorage.FindUrl(updateItem.SyncID)).ETag);
                 }
@@ -180,6 +183,7 @@ namespace CaldavConnector
                 catch (WebException e)
                 {
                     Debug.WriteLine(e.Message);
+                    MessageBox.Show("The following error occurred: " + e.Message);
                 }
             }
 

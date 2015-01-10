@@ -52,6 +52,7 @@
             this.btn_StartSync = this.Factory.CreateRibbonButton();
             this.btn_StopSync = this.Factory.CreateRibbonButton();
             this.btn_ChangeInterval = this.Factory.CreateRibbonButton();
+            this.btn_Reset = this.Factory.CreateRibbonButton();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.btn_Settings = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
@@ -149,6 +150,7 @@
             this.group2.Items.Add(this.btn_StartSync);
             this.group2.Items.Add(this.btn_StopSync);
             this.group2.Items.Add(this.btn_ChangeInterval);
+            this.group2.Items.Add(this.btn_Reset);
             this.group2.Label = "Test SyncLogic";
             this.group2.Name = "group2";
             // 
@@ -175,6 +177,12 @@
             this.btn_ChangeInterval.Label = "Change interval";
             this.btn_ChangeInterval.Name = "btn_ChangeInterval";
             this.btn_ChangeInterval.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_ChangeInterval_Click);
+            // 
+            // btn_Reset
+            // 
+            this.btn_Reset.Label = "Reset";
+            this.btn_Reset.Name = "btn_Reset";
+            this.btn_Reset.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_Reset_Click);
             // 
             // group3
             // 
@@ -227,6 +235,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_ChangeInterval;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group3;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_Settings;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btn_Reset;
     }
 
     partial class ThisRibbonCollection

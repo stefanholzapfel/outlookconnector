@@ -1,4 +1,6 @@
-﻿using Shared.Interfaces;
+﻿using OutlookAddIn;
+using Shared;
+using Shared.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,8 +13,8 @@ namespace SyncLogic
 {
     public class SyncService
     {
-        private ICalendarSyncable _syncMain;
-        private ICalendarSyncable _syncSecondary;
+        private CalendarHandler _syncOutlook;
+        private ICalendarSyncable _syncExternal;
         private Timer _syncThread = new Timer();
         private bool _isStarted = false;
         private bool _isRunning = false;
@@ -22,10 +24,10 @@ namespace SyncLogic
         /// </summary>
         public const double MIN_INTERVAL = 1000;
 
-        public SyncService(ICalendarSyncable syncMain, ICalendarSyncable syncSecondary, double interval)
+        public SyncService(CalendarHandler syncOutlook, ICalendarSyncable syncExternal, double interval)
         {
-            this._syncMain = syncMain;
-            this._syncSecondary = syncSecondary;
+            this._syncOutlook = syncOutlook;
+            this._syncExternal = syncExternal;
 
             SetInterval(interval);
 
@@ -42,6 +44,17 @@ namespace SyncLogic
             if (interval < MIN_INTERVAL) return false;
 
             _syncThread.Interval = interval;
+            return true;
+        }
+
+        /// <summary>
+        /// Resets the outlook calendar, pulls a new copy from the external calendar and adds it to outlook calendar.
+        /// </summary>
+        public bool Reset()
+        {
+            _syncOutlook.DeleteCustomCalendar();
+            _syncOutlook.CreateCustomCalendar();
+            _syncOutlook.DoUpdates(_syncExternal.GetInitialSync());
             return true;
         }
 
@@ -95,9 +108,45 @@ namespace SyncLogic
         /// </summary>
         private void Synchronize()
         {
-            //throw new NotImplementedException();
-            Debug.WriteLine("Executing Synchronize() ... (" + DateTime.Now.ToLongTimeString() + ")");
-        }
+            //Get changes since last snyc
+            AppointmentSyncCollection _outlookGetUpdates = _syncOutlook.GetUpdates();
+            AppointmentSyncCollection _externalGetUpdates = _syncExternal.GetUpdates();
 
+            //Find updating conflicts and solve them
+            List<OutlookAppointment> deleteFromOutlookCollection = new List<OutlookAppointment>();
+            List<OutlookAppointment> deleteFromExternalCollection = new List<OutlookAppointment>();
+            if (_outlookGetUpdates.UpdateList.Count > 0 && _externalGetUpdates.UpdateList.Count > 0)
+            {
+                foreach (var itemOutlook in _outlookGetUpdates.UpdateList)
+                {
+                    foreach (var itemExternal in _externalGetUpdates.UpdateList)
+                    {
+                        if (itemOutlook.SyncID.Equals(itemExternal.SyncID))
+                        {
+                            int comparison = DateTime.Compare(itemOutlook.LastModificationTime, itemExternal.LastModificationTime);
+                            //Item was edited in Outlook prior to the external source or at the same time --> external wins
+                            if (comparison <= 0)
+                            {
+                                deleteFromOutlookCollection.Add(itemOutlook);
+                            }
+                            //Item was edited in Outlook after last modification on external source --> outlook wins
+                            else
+                            {
+                                deleteFromExternalCollection.Add(itemExternal);
+                            }
+                        }
+                    }
+                }
+                foreach (var item in deleteFromExternalCollection)
+                    _externalGetUpdates.UpdateList.Remove(item);
+                foreach (var item in deleteFromOutlookCollection)
+                    _outlookGetUpdates.UpdateList.Remove(item);
+            }
+
+
+            //Write the changes to the destinations
+            _syncOutlook.DoUpdates(_externalGetUpdates);
+            _syncOutlook.UpdateSyncIDs(_syncExternal.DoUpdates(_outlookGetUpdates));
+        }
     }
 }

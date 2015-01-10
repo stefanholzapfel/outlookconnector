@@ -16,7 +16,8 @@ namespace OutlookAddIn
     public partial class SyncRibbon
     {        
         CalendarHandler _calHandler;
-        SyncService _synService = new SyncService(null, null, 1000);
+        ConnectorHandler _connHandler;
+        SyncService _synService;
         String _syncID = "1";
         String _calendarName = "Caldav Calendar";
         DateTime _syncTime = DateTime.Now;
@@ -26,6 +27,10 @@ namespace OutlookAddIn
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {
             _calHandler = new CalendarHandler(Globals.ThisAddIn.Application, _calendarName);
+            _connHandler = new ConnectorHandler();
+            _connHandler.ChooseConnector("CaldavConnector");
+            _connHandler.Settings = new ConnectorSettings("fst5", "fst5", "https://nas.apfelstrudel.net/owncloud/remote.php/caldav/calendars/fst5/fst5");
+            _synService = new SyncService(_calHandler, _connHandler, 1000);
         }
 
         private void btn_CreateCalendar_Click(object sender, RibbonControlEventArgs e)
@@ -148,10 +153,16 @@ namespace OutlookAddIn
             _synService.SetInterval(2000);
         }
 
+        private void btn_Reset_Click(object sender, RibbonControlEventArgs e)
+        {
+            _synService.Reset();
+        }
+
         private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
         {                        
             ConfigManagerUI formConfigManager = new ConfigManagerUI(_confManager);              
             formConfigManager.ShowDialog();           
         }
+
     }
 }
