@@ -255,6 +255,7 @@ namespace OutlookAddIn
                 }
             }
 
+            SetSyncTime(DateTime.Now);
             return null;
         }
 
@@ -277,6 +278,8 @@ namespace OutlookAddIn
                 foundItem.ItemProperties["SyncID"].Value = entry.Value;
                 foundItem.Save();
             }
+
+            SetSyncTime(DateTime.Now);
         }
 
         /// <summary>
