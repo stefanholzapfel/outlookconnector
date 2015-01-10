@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CaldavConnector.Converter
 {
-    public static class IcsToAppointmentItemConverter
+    public static class CalDavElementToAppointmentItemConverter
     {
         public static OutlookAppointment Convert(CalDavElement _myElement)
         {

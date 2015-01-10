@@ -83,11 +83,12 @@
     <Compile Include="Client\Calendar.cs" />
     <Compile Include="Client\Common.cs" />
     <Compile Include="Client\Server.cs" />
-    <Compile Include="Converter\IcsToAppointmentItemConverter.cs" />
+    <Compile Include="Converter\CalDavElementToAppointmentItemConverter.cs" />
     <Compile Include="DataLayer\LocalStorageProvider.cs" />
     <Compile Include="Model\CalDavElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Converter\StringToDateTimeConverter.cs" />
+    <Compile Include="Utilities\AppointmentItemXmlParser.cs" />
     <Compile Include="Utilities\XmlCalDavParser.cs" />
   </ItemGroup>
   <ItemGroup>

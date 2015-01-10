@@ -46,19 +46,36 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Search the database for a GUID.
+        /// Search the database for an ETag relating to a given GUID.
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
-        /// <param name="Guid">The Guid to look up.</param>
+        /// <param name="guid">The Guid to look up.</param>
         /// <returns>The matching ETag for the given Guid or null if nothing found.</returns>
-        public String FindEntry(String Guid) {
+        public String FindEtag(String guid) {
             String[] temp = null;
-            if (Guid != null && localCache.ContainsKey(Guid))
-                temp = localCache[Guid];
+            if (guid != null && localCache.ContainsKey(guid))
+                temp = localCache[guid];
             if (temp == null)
                 return null;
             else
                 return temp[0];
+        }
+
+        /// <summary>
+        /// Search the database for an url relating to a given GUID.
+        /// EFFICIENT - No SQL statements executed!
+        /// </summary>
+        /// <param name="guid">The Guid to look up.</param>
+        /// <returns>The matching Url for the given Guid or null if nothing found.</returns>
+        public String FindUrl(String guid)
+        {
+            String[] temp = null;
+            if (guid != null && localCache.ContainsKey(guid))
+                temp = localCache[guid];
+            if (temp == null)
+                return null;
+            else
+                return temp[1];
         }
 
         /// <summary>
@@ -75,13 +92,13 @@ namespace CaldavConnector.DataLayer
         /// <summary>
         /// Edit the ETag of an existing entry.
         /// </summary>
-        /// <param name="Guid">Guid of entry to edit.</param>
-        /// <param name="ETag">New value for ETag</param>
-        public void EditETag(String Guid, String ETag) {
-            if (localCache.ContainsKey(Guid))
+        /// <param name="guid">Guid of entry to edit.</param>
+        /// <param name="eTag">New value for ETag</param>
+        public void EditETag(String guid, String eTag) {
+            if (localCache.ContainsKey(guid))
             {
-                localCache[Guid][0] = ETag;
-                ExecuteNonQuery("UPDATE localETagCache SET ETag ='"+ETag+"' WHERE Guid='"+Guid+"'");
+                localCache[guid][0] = eTag;
+                ExecuteNonQuery("UPDATE localETagCache SET ETag ='"+eTag+"' WHERE Guid='"+guid+"'");
             }
         }
 
@@ -89,26 +106,26 @@ namespace CaldavConnector.DataLayer
         /// Add a new entry to the database if Guid is not already
         /// present.
         /// </summary>
-        /// <param name="Guid">Guid to add.</param>
-        /// <param name="ETag">ETag to add.</param>
-        /// <param name="Url">Url to add</param>
-        public void WriteEntry(String Guid, String ETag, String Url) {
-            if (!localCache.ContainsKey(Guid))
+        /// <param name="guid">Guid to add.</param>
+        /// <param name="eTag">ETag to add.</param>
+        /// <param name="url">Url to add</param>
+        public void WriteEntry(String guid, String eTag, String url) {
+            if (!localCache.ContainsKey(guid))
             {
-                localCache.Add(Guid, new String[] {ETag, Url});
-                ExecuteNonQuery("INSERT INTO localETagCache (Guid, ETag, Url) values ('" + Guid + "', '" + ETag + "', '" + Url + "')");
+                localCache.Add(guid, new String[] { eTag, url });
+                ExecuteNonQuery("INSERT INTO localETagCache (Guid, ETag, Url) values ('" + guid + "', '" + eTag + "', '" + url + "')");
             }
         }
 
         /// <summary>
         /// Delete an entry from the database if it exists.
         /// </summary>
-        /// <param name="Guid">Guid to delete.</param>
-        public void DeleteEntry(String Guid) {
-            if (localCache.ContainsKey(Guid))
+        /// <param name="guid">Guid to delete.</param>
+        public void DeleteEntry(String guid) {
+            if (localCache.ContainsKey(guid))
             {
-                localCache.Remove(Guid);
-                ExecuteNonQuery("DELETE FROM localETagCache WHERE Guid='" + Guid + "'");
+                localCache.Remove(guid);
+                ExecuteNonQuery("DELETE FROM localETagCache WHERE Guid='" + guid + "'");
             }
         }
 
@@ -141,7 +158,9 @@ namespace CaldavConnector.DataLayer
             SQLiteCommand command = new SQLiteCommand(query, myConnection);
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
+            {
                 tempDictionary.Add(reader["Guid"].ToString(), new String[] { reader["ETag"].ToString(), reader["Url"].ToString() });
+            }
             myConnection.Close();
             return tempDictionary;
         }

@@ -32,6 +32,7 @@ namespace Shared.Interfaces
         /// applies the updates to the calendar and returns a key value pair with GlobalAppointmentID -> SyncID
         /// </summary>
         /// <param name="syncItems">appointments to be added/updated/deleted</param>
+        /// <returns>dictionary with GlobalAppointmentID -> SyncID assignment</returns>
         Dictionary<String, String> DoUpdates(AppointmentSyncCollection syncItems);
     }
 }
