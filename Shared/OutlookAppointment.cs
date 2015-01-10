@@ -17,7 +17,7 @@ namespace Shared
         public String GlobalAppointmentID { get; set; }
 
         public String Subject { get; set; }
-        
+
         public String Body { get; set; }
 
         public DateTime Start { get; set; }
@@ -29,7 +29,11 @@ namespace Shared
             set
             {
                 _end = value;
-                if (Start != null && _end != null) _duration = (_end - Start).Minutes;
+                if (Start != null && _end != null)
+                {
+                    TimeSpan tSpan = _end - Start;
+                    _duration = (int)tSpan.TotalMinutes;
+                }
             }
         }
 
@@ -61,7 +65,7 @@ namespace Shared
         /// <summary>
         /// Creates an empty appointment
         /// </summary>
-        public OutlookAppointment() {}
+        public OutlookAppointment() { }
 
         /// <summary>
         /// Creates an appointment, as a copy from an Outlook.AppointmentItem
