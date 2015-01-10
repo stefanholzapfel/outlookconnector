@@ -79,6 +79,9 @@ namespace Shared
 
             this.LastModificationTime = item.LastModificationTime;
 
+            if (item.ItemProperties["SyncID"] != null)
+                this.SyncID = item.ItemProperties["SyncID"].Value;
+
             //this.RTFBody = item.RTFBody;
             //this.StartUTC = item.StartUTC;
             //this.EndUTC = item.EndUTC;
