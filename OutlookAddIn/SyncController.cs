@@ -79,8 +79,6 @@ namespace OutlookAddIn
                 {                    
                     _synService.Reset();
                     _confManager.SetSynced(1);
-                    _synService.ExecuteOnce();
-
                 }
                 else
                 {

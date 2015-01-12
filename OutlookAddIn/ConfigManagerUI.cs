@@ -77,8 +77,7 @@ namespace OutlookAddIn
                 syncController.ResetSync();
             }
             else if (dialogResult == DialogResult.No)
-            {
-                
+            {                
             }
         }
         private void btn_Save_Click(object sender, EventArgs e)            
@@ -114,9 +113,9 @@ namespace OutlookAddIn
                         if (check_autosync.Checked == true) autosync = 1;
                         else autosync = 0;
 
-                        confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
                         syncController.StopSync();
-
+                        confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
+                        
                         if (autosync == 1) syncController.InitializeAutoSync();
                     }
                     else if (dialogResult == DialogResult.No)
@@ -137,9 +136,9 @@ namespace OutlookAddIn
                     if (check_autosync.Checked == true) autosync = 1;
                     else autosync = 0;
 
-                    confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
                     syncController.StopSync();
-
+                    confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
+              
                     if (autosync == 1) syncController.InitializeAutoSync();
                 }
             }
