@@ -126,6 +126,25 @@ namespace OutlookAddIn
         }
 
         /// <summary>
+        /// Renames the custom calendar
+        /// </summary>
+        /// <param name="newCalendarName">new calendar name</param>
+        public void RenameCustomCalendar(String newCalendarName)
+        {
+            if (_customCalendar == null || String.IsNullOrEmpty(newCalendarName)) return;
+
+            try
+            {
+                _customCalendar.Name = newCalendarName;
+                _calendarName = newCalendarName;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The following error occurred: " + ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Deletes the custom calendar
         /// </summary>
         public void DeleteCustomCalendar()
