@@ -22,7 +22,7 @@ namespace SyncLogic
         /// <summary>
         /// minimum interval time
         /// </summary>
-        public const double MIN_INTERVAL = 1000;
+        public const double MIN_INTERVAL = 10000;
 
         public SyncService(CalendarHandler syncOutlook, ICalendarSyncable syncExternal, double interval)
         {
@@ -94,13 +94,7 @@ namespace SyncLogic
 
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
-            // checking if another sync thread is already running
-            if (!_isRunning)
-            {
-                _isRunning = true;
-                Synchronize();
-                _isRunning = false;
-            }
+            Synchronize();
         }
 
         /// <summary>
@@ -108,45 +102,53 @@ namespace SyncLogic
         /// </summary>
         private void Synchronize()
         {
-            //Get changes since last snyc
-            AppointmentSyncCollection _outlookGetUpdates = _syncOutlook.GetUpdates();
-            AppointmentSyncCollection _externalGetUpdates = _syncExternal.GetUpdates();
-
-            //Find updating conflicts and solve them
-            List<OutlookAppointment> deleteFromOutlookCollection = new List<OutlookAppointment>();
-            List<OutlookAppointment> deleteFromExternalCollection = new List<OutlookAppointment>();
-            if (_outlookGetUpdates.UpdateList.Count > 0 && _externalGetUpdates.UpdateList.Count > 0)
+            // checking if another sync is already running
+            if (!_isRunning)
             {
-                foreach (var itemOutlook in _outlookGetUpdates.UpdateList)
+                _isRunning = true;
+
+                //Get changes since last snyc
+                AppointmentSyncCollection _outlookGetUpdates = _syncOutlook.GetUpdates();
+                AppointmentSyncCollection _externalGetUpdates = _syncExternal.GetUpdates();
+
+                //Find updating conflicts and solve them
+                List<OutlookAppointment> deleteFromOutlookCollection = new List<OutlookAppointment>();
+                List<OutlookAppointment> deleteFromExternalCollection = new List<OutlookAppointment>();
+                if (_outlookGetUpdates.UpdateList.Count > 0 && _externalGetUpdates.UpdateList.Count > 0)
                 {
-                    foreach (var itemExternal in _externalGetUpdates.UpdateList)
+                    foreach (var itemOutlook in _outlookGetUpdates.UpdateList)
                     {
-                        if (itemOutlook.SyncID.Equals(itemExternal.SyncID))
+                        foreach (var itemExternal in _externalGetUpdates.UpdateList)
                         {
-                            int comparison = DateTime.Compare(itemOutlook.LastModificationTime, itemExternal.LastModificationTime);
-                            //Item was edited in Outlook prior to the external source or at the same time --> external wins
-                            if (comparison <= 0)
+                            if (itemOutlook.SyncID.Equals(itemExternal.SyncID))
                             {
-                                deleteFromOutlookCollection.Add(itemOutlook);
-                            }
-                            //Item was edited in Outlook after last modification on external source --> outlook wins
-                            else
-                            {
-                                deleteFromExternalCollection.Add(itemExternal);
+                                int comparison = DateTime.Compare(itemOutlook.LastModificationTime, itemExternal.LastModificationTime);
+                                //Item was edited in Outlook prior to the external source or at the same time --> external wins
+                                if (comparison <= 0)
+                                {
+                                    deleteFromOutlookCollection.Add(itemOutlook);
+                                }
+                                //Item was edited in Outlook after last modification on external source --> outlook wins
+                                else
+                                {
+                                    deleteFromExternalCollection.Add(itemExternal);
+                                }
                             }
                         }
                     }
+                    foreach (var item in deleteFromExternalCollection)
+                        _externalGetUpdates.UpdateList.Remove(item);
+                    foreach (var item in deleteFromOutlookCollection)
+                        _outlookGetUpdates.UpdateList.Remove(item);
                 }
-                foreach (var item in deleteFromExternalCollection)
-                    _externalGetUpdates.UpdateList.Remove(item);
-                foreach (var item in deleteFromOutlookCollection)
-                    _outlookGetUpdates.UpdateList.Remove(item);
+
+
+                //Write the changes to the destinations
+                _syncOutlook.DoUpdates(_externalGetUpdates);
+                _syncOutlook.UpdateSyncIDs(_syncExternal.DoUpdates(_outlookGetUpdates));
+
+                _isRunning = false;
             }
-
-
-            //Write the changes to the destinations
-            _syncOutlook.DoUpdates(_externalGetUpdates);
-            _syncOutlook.UpdateSyncIDs(_syncExternal.DoUpdates(_outlookGetUpdates));
         }
     }
 }
