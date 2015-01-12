@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -15,7 +16,7 @@ namespace SyncLogic
     {
         private CalendarHandler _syncOutlook;
         private ICalendarSyncable _syncExternal;
-        private Timer _syncThread = new Timer();
+        private System.Timers.Timer _syncThread = new System.Timers.Timer();
         private bool _isStarted = false;
         private bool _isRunning = false;
 
@@ -52,9 +53,19 @@ namespace SyncLogic
         /// </summary>
         public bool Reset()
         {
-            _syncOutlook.DeleteCustomCalendar();
-            _syncOutlook.CreateCustomCalendar();
-            _syncOutlook.DoUpdates(_syncExternal.GetInitialSync());
+            Debug.WriteLine("Executed Reset()");
+
+            if (!_isRunning)
+            {
+                _isRunning = true;
+
+                _syncOutlook.DeleteCustomCalendar();
+                _syncOutlook.CreateCustomCalendar();
+                _syncOutlook.DoUpdates(_syncExternal.GetInitialSync());
+
+                _isRunning = false;
+            }
+
             return true;
         }
 
@@ -65,6 +76,8 @@ namespace SyncLogic
         public bool Start()
         {
             if (_syncThread.Interval < MIN_INTERVAL) return false;
+
+            Debug.WriteLine("Service started");
 
             _syncThread.Start();
             _isStarted = true;
@@ -78,6 +91,8 @@ namespace SyncLogic
         {
             _syncThread.Stop();
             _isStarted = false;
+
+            Debug.WriteLine("Service stopped");
         }
 
         /// <summary>
@@ -85,15 +100,21 @@ namespace SyncLogic
         /// </summary>
         public void ExecuteOnce()
         {
-            // if the timer is already running, it needs to be stopped before the manual sync and then restarted
+            Debug.WriteLine("Started ExecuteOnce()");
 
             if (_isStarted) _syncThread.Stop();
-            Synchronize();
+
+            Thread thread = new Thread(Synchronize);
+            thread.Start();
+
             if (_isStarted) _syncThread.Start();
+
+            Debug.WriteLine("Finished ExecuteOnce()");
         }
 
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
+            Debug.WriteLine("Started _syncThread_Elapsed()");
             Synchronize();
         }
 
@@ -102,6 +123,8 @@ namespace SyncLogic
         /// </summary>
         private void Synchronize()
         {
+            Debug.WriteLine("Started Synchronize()");
+
             // checking if another sync is already running
             if (!_isRunning)
             {
@@ -149,6 +172,10 @@ namespace SyncLogic
 
                 _isRunning = false;
             }
+            else
+                Debug.WriteLine("Synchronize() not processed, it is already running");
+
+            Debug.WriteLine("Finished Synchronize()");
         }
     }
 }
