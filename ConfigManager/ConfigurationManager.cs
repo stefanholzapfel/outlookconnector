@@ -60,7 +60,12 @@ namespace ConfigManager
             conf.synced = _synced;
             SaveConfig();
         }
-        public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced)
+        public void SetAutoSync(byte _autosync)
+        {
+            conf.autosync = _autosync;
+            SaveConfig();
+        }
+        public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced, byte _autosync)
         {
 
             conf.userName = _userName;
@@ -70,6 +75,7 @@ namespace ConfigManager
             conf.URL = _URL;
             conf.updateInterval = _updateInterval;
             conf.synced = _synced;
+            conf.autosync = _autosync;
             SaveConfig();
         }
         public void SaveConfig()
@@ -101,6 +107,7 @@ namespace ConfigManager
         public string URL { get; set; }
         public int updateInterval { get; set; }
         public byte synced { get; set; }
+        public byte autosync { get; set; }
         
     }
 }

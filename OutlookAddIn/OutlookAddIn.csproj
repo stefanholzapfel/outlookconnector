@@ -181,6 +181,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="SyncRibbon.resx">
       <DependentUpon>SyncRibbon.cs</DependentUpon>
@@ -194,6 +195,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SyncController.cs" />
     <Compile Include="SyncRibbon.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -232,6 +234,12 @@
       <Project>{18fb13f3-a77f-40b1-90e4-fb6c38a96d5c}</Project>
       <Name>SyncLogic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file_edit.png" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

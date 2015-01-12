@@ -29,7 +29,7 @@ namespace ConsoleTestAndi
             conf.GetConfig();
              */
             ConfigurationManager confman = new ConfigurationManager();
-            confman.SetConfig("Test1", "Test1", "Test1", "Test1", "Test1", 1000,1);
+            //confman.SetConfig("Test1", "Test1", "Test1", "Test1", "Test1", 1000,1);
 
             Console.WriteLine(confman.GetPassword());
             Console.Read();

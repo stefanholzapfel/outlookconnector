@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ConfigManager;
 using System.ComponentModel.Composition.Hosting;
+using SyncLogic;
+using Shared;
 
 namespace OutlookAddIn
 {
@@ -17,6 +19,8 @@ namespace OutlookAddIn
         
         ConfigurationManager confManager;
         Config conf = new Config();
+
+        SyncController syncController;
 
         ConnectorHandler conHan = new ConnectorHandler();
 
@@ -29,13 +33,16 @@ namespace OutlookAddIn
         private string URL;
         private int updateInterval;
         private byte synced;
+        private byte autosync;
         
-        public ConfigManagerUI(ConfigurationManager _configManager)
+        public ConfigManagerUI(ConfigurationManager _configManager, SyncController _syncController)
         {           
             InitializeComponent();
             confManager = _configManager;
             conf = confManager.GetConfig();
-            
+
+            syncController = _syncController;
+
             availableConnectors = conHan.GetAvailableConnectors();                       
             foreach (var item in availableConnectors)
             {
@@ -46,6 +53,8 @@ namespace OutlookAddIn
             {                
                 userName = conf.userName;
                 synced = conf.synced;
+                autosync = conf.autosync;
+                if (autosync==1) check_autosync.Checked = true;
                 txt_Username.Text = userName;
                 calendarName = conf.calendarName;
                 txt_CalendarName.Text = calendarName;
@@ -65,12 +74,7 @@ namespace OutlookAddIn
             DialogResult dialogResult = MessageBox.Show("Do you really want to reset the synchronization?", "Reset Synchronization", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                if (synced == 1)
-                {
-                    synced = 0;
-                    confManager.SetSynced(synced);
-                }
-                else { }
+                syncController.ResetSync();
             }
             else if (dialogResult == DialogResult.No)
             {
@@ -93,13 +97,51 @@ namespace OutlookAddIn
             }
             else
             {
-                userName = txt_Username.Text;
-                calendarName = txt_CalendarName.Text;
-                password = txt_Password.Text;
-                connector = cbo_Connector.SelectedItem.ToString();
-                URL = txt_URL.Text;
-                updateInterval = Int32.Parse(txt_UpdateInterval.Text);
-                confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval, synced);
+                if ((calendarName != null) && ((userName != txt_Username.Text) || (calendarName != txt_CalendarName.Text) || (connector != cbo_Connector.SelectedItem.ToString()) || (URL != txt_URL.Text)))
+                {
+                    DialogResult dialogResult = MessageBox.Show("Do you really want to change these settings? This will automatically reset the synchronization.", "Change Settings", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        userName = txt_Username.Text;
+                        calendarName = txt_CalendarName.Text;
+                        connector = cbo_Connector.SelectedItem.ToString();
+                        URL = txt_URL.Text;
+                        synced = 0;
+
+                        password = txt_Password.Text;
+                        updateInterval = Int32.Parse(txt_UpdateInterval.Text);
+
+                        if (check_autosync.Checked == true) autosync = 1;
+                        else autosync = 0;
+
+                        confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval, synced, autosync);
+                        syncController.StopSync();
+
+                        if (autosync == 1) syncController.InitializeAutoSync();
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+
+                    }
+                }
+                else
+                {
+                    userName = txt_Username.Text;
+                    calendarName = txt_CalendarName.Text;
+                    connector = cbo_Connector.SelectedItem.ToString();
+                    URL = txt_URL.Text;
+
+                    password = txt_Password.Text;
+                    updateInterval = Int32.Parse(txt_UpdateInterval.Text);
+
+                    if (check_autosync.Checked == true) autosync = 1;
+                    else autosync = 0;
+
+                    confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval, synced, autosync);
+                    syncController.StopSync();
+
+                    if (autosync == 1) syncController.InitializeAutoSync();
+                }
             }
         }
     }
