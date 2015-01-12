@@ -62,7 +62,7 @@ namespace OutlookAddIn
                 cbo_Connector.SelectedIndex = cbo_Connector.FindStringExact(connector);               
                 URL = conf.URL;
                 txt_URL.Text = URL;
-                updateInterval = conf.updateInterval;
+                updateInterval = conf.updateInterval/1000;
                 txt_UpdateInterval.Text = updateInterval.ToString();
                 password = confManager.GetPassword();
                 txt_Password.Text = password;                
@@ -89,11 +89,11 @@ namespace OutlookAddIn
             }
             else if (!int.TryParse(txt_UpdateInterval.Text, out updateInterval))
             {
-                MessageBox.Show("Update Interval only allows numbers between 1000 and 2.147.483.647");
+                MessageBox.Show("Update Interval only allows natural numbers between 10 and 3600");
             }
-            else if (Int32.Parse(txt_UpdateInterval.Text) < 1000)
+            else if ((Int32.Parse(txt_UpdateInterval.Text) < 10) || (Int32.Parse(txt_UpdateInterval.Text) > 3600))
             {
-                MessageBox.Show("Minimum update intervall = 1000");
+                MessageBox.Show("Update Interval only allows natural numbers between 10 and 3600");
             }
             else
             {
@@ -114,7 +114,7 @@ namespace OutlookAddIn
                         if (check_autosync.Checked == true) autosync = 1;
                         else autosync = 0;
 
-                        confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval, synced, autosync);
+                        confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
                         syncController.StopSync();
 
                         if (autosync == 1) syncController.InitializeAutoSync();
@@ -137,7 +137,7 @@ namespace OutlookAddIn
                     if (check_autosync.Checked == true) autosync = 1;
                     else autosync = 0;
 
-                    confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval, synced, autosync);
+                    confManager.SetConfig(userName, password, calendarName, connector, URL, updateInterval*1000, synced, autosync);
                     syncController.StopSync();
 
                     if (autosync == 1) syncController.InitializeAutoSync();
