@@ -24,14 +24,14 @@ namespace OutlookAddIn
         public SyncController(ConfigurationManager confManager)
         {
             _confManager = confManager;
+            _connHandler = new ConnectorHandler();
+            _config = _confManager.GetConfig();
         }
         /// <summary>
         /// Instantiates and gets everything needed for the sync
         /// </summary>
         public void InitializeSync()
-        {
-            _connHandler = new ConnectorHandler();
-            _config = _confManager.GetConfig();
+        {             
 
             if (_config.calendarName != null)
             {
@@ -56,18 +56,7 @@ namespace OutlookAddIn
                 if (_config.autosync == 1)
                 {
                     autosync = true;
-
-                    if (_config.synced == 0)
-                    {
-                        _synService.Reset();
-                        _confManager.SetSynced(1);
-                        _synService.Start();
-
-                    }
-                    else
-                    {
-                        _synService.Start();
-                    }
+                    _synService.Start();                    
                 }
             }
             else
@@ -84,15 +73,8 @@ namespace OutlookAddIn
                 {
                     InitializeSync();
                 }
-                if (_config.synced == 0)
-                {                    
-                    _synService.Reset();
-                    _confManager.SetSynced(1);
-                }
-                else
-                {
-                    _synService.ExecuteOnce();
-                }
+                _synService.ExecuteOnce();
+                
             }
             else
                 MessageBox.Show("Please enter settings first.");
@@ -109,6 +91,10 @@ namespace OutlookAddIn
                 init = false;
             }
         }
+        /// <summary>
+        /// Change the current Interval and save it
+        /// </summary>
+        /// <param name="_updateInterval"></param>
         public void ChangeInterval(int _updateInterval)
         {
             if (_config.calendarName != null)
@@ -127,11 +113,23 @@ namespace OutlookAddIn
         /// <summary>
         /// Reset the current Sync
         /// </summary>
-        public void ResetSync()
+        public void ResetSync(bool newSettings)
         {
-            _calHandler.DeleteCustomCalendar();               
-            _confManager.SetSynced(0);            
+            if (newSettings == false)
+            {
+                _calHandler.DeleteCustomCalendar();
+            }
+            if (init == false)
+            {
+                InitializeSync();
+            }
+            _synService.Reset();
+            _confManager.SetSynced(1);
         }
+        /// <summary>
+        /// Get autosync state
+        /// </summary>
+        /// <returns>Bool with autosync state</returns>
         public bool GetAutosync()
         {
             return autosync;

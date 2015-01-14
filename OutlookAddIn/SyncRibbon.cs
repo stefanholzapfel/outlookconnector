@@ -16,24 +16,30 @@ namespace OutlookAddIn
     public partial class SyncRibbon
     {        
 
-        ConfigurationManager _confManager;        
+        ConfigurationManager _confManager;
+        Config _config = new Config();
         SyncController _syncController;
-        private int updateInterval;         
+        private int updateInterval;      
+   
                    
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {            
             _confManager = new ConfigurationManager();
+            _config = _confManager.GetConfig();
             _syncController = new SyncController(_confManager);
-            _syncController.InitializeSync();            
-            updateInterval = (_confManager.GetUpdateInterval()/1000);
-            edb_interval.Text = updateInterval.ToString();
-                             
-
-            if (_syncController.GetAutosync() == true)
+            
+            if (_config.autosync == 1)
             {
                 _syncController.InitializeAutoSync();
                 btn_autosync.Label = "Deactivate";
             }
+            else
+            {
+                _syncController.InitializeSync();
+            }
+            updateInterval = (_confManager.GetUpdateInterval()/1000);
+            edb_interval.Text = updateInterval.ToString();                      
+            
         }        
         private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
         {                        

@@ -84,11 +84,9 @@ namespace OutlookAddIn
                         synced = 0;
                         password = txt_Password.Text;
                         
-                        syncController.StopSync();
-                        syncController.ResetSync();
-                        
+                        syncController.StopSync();                                               
                         confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, 0);
-                                                
+                        syncController.ResetSync(false);                                                
                         this.Close();
 
                     }
@@ -103,8 +101,11 @@ namespace OutlookAddIn
                     connector = cbo_Connector.SelectedItem.ToString();
                     URL = txt_URL.Text;
                     synced = 0;
-                    password = txt_Password.Text;
+                    password = txt_Password.Text;                    
+
                     confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, 0);
+
+                    syncController.ResetSync(true);
                     this.Close();                    
                 }
             }
