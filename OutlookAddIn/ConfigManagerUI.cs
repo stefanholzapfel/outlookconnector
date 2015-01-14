@@ -31,8 +31,9 @@ namespace OutlookAddIn
         private string calendarName;
         private string connector;
         private string URL;
-        private byte synced;     
+        private byte synced;
 
+        private bool newSettings = true;
         public ConfigManagerUI(ConfigurationManager _configManager, SyncController _syncController)
         {            
             InitializeComponent();
@@ -87,9 +88,12 @@ namespace OutlookAddIn
                         password = txt_Password.Text;                        
                                                                     
                         confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, conf.autosync);
-                        syncController.ResetSync(false);
+                        newSettings = false;
+                        btn_Save.Text = "In Progress...";
+                        btn_Save.Enabled = false;
+                        backgroundWorker1.RunWorkerAsync();
                         
-                        this.Close();
+                       
                     }
                     else if (dialogResult == DialogResult.No)
                     {
@@ -105,9 +109,10 @@ namespace OutlookAddIn
                     password = txt_Password.Text;                    
 
                     confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, 0);
-
-                    syncController.ResetSync(true);
-                    this.Close();                    
+                    newSettings = true;
+                    btn_Save.Text = "In Progress...";
+                    btn_Save.Enabled = false;
+                    backgroundWorker1.RunWorkerAsync();            
                 }
             }
         }
@@ -117,6 +122,16 @@ namespace OutlookAddIn
             {
                 syncController.InitializeAutoSync();
             }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            syncController.ResetSync(newSettings);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -39,6 +39,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txt_URL = new System.Windows.Forms.TextBox();
             this.btn_Save = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // label1
@@ -133,6 +134,11 @@
             this.btn_Save.UseVisualStyleBackColor = true;
             this.btn_Save.Click += new System.EventHandler(this.btn_Save_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // ConfigManagerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,5 +177,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txt_URL;
         private System.Windows.Forms.Button btn_Save;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
