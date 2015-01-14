@@ -36,9 +36,9 @@ namespace OutlookAddIn
             {
                 _syncController.InitializeSync();
             }
+
             updateInterval = (_confManager.GetUpdateInterval()/1000);
-            edb_interval.Text = updateInterval.ToString();                      
-            
+            edb_interval.Text = updateInterval.ToString(); 
         }        
         private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
         {                        
@@ -49,7 +49,6 @@ namespace OutlookAddIn
         {
             _syncController.IntitializeManualSync();
         }
-
         private void btn_autosync_Click(object sender, RibbonControlEventArgs e)
         {
             if (_syncController.GetAutosync() == false)
@@ -68,7 +67,6 @@ namespace OutlookAddIn
                 btn_autosync.Label = "Activate";
             }
         }
-
         private void edb_interval_TextChanged(object sender, RibbonControlEventArgs e)
         {
             if (!int.TryParse(edb_interval.Text, out updateInterval))
@@ -84,10 +82,6 @@ namespace OutlookAddIn
                 updateInterval = Int32.Parse(edb_interval.Text);
                 _syncController.ChangeInterval(updateInterval*1000);
             }
-        }
-        public void btn_autoSync_nameChanged()
-        {
-            btn_autosync.Label = "Changed";
         }
     }
 }

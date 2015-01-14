@@ -86,7 +86,7 @@
             // 
             // label1
             // 
-            this.label1.Label = "Interval in Seconds";
+            this.label1.Label = "Interval in seconds";
             this.label1.Name = "label1";
             // 
             // edb_interval
@@ -94,6 +94,7 @@
             this.edb_interval.Label = "in seconds";
             this.edb_interval.Name = "edb_interval";
             this.edb_interval.ShowLabel = false;
+            this.edb_interval.Text = null;
             this.edb_interval.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.edb_interval_TextChanged);
             // 
             // btn_autosync
