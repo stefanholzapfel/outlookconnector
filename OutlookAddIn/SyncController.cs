@@ -14,7 +14,8 @@ namespace OutlookAddIn
     {
         ConfigurationManager _confManager;
         Config _config;
-        private bool init = false;      
+        private bool init = false;
+        private bool autosync = false;
 
         ConnectorHandler _connHandler;
         CalendarHandler _calHandler;
@@ -46,23 +47,31 @@ namespace OutlookAddIn
         /// </summary>
         public void InitializeAutoSync()
         {
-            if (init == false)
+            if (_config.calendarName != null)
             {
-                InitializeSync();
-            }            
-            if (_config.autosync == 1)
-            {
-                if (_config.synced == 0)
-                {                    
-                    _synService.Reset();
-                    _confManager.SetSynced(1);
-                    _synService.Start();
-                }
-                else
+                if (init == false)
                 {
-                    _synService.Start();
+                    InitializeSync();
+                }
+                if (_config.autosync == 1)
+                {
+                    autosync = true;
+
+                    if (_config.synced == 0)
+                    {
+                        _synService.Reset();
+                        _confManager.SetSynced(1);
+                        _synService.Start();
+
+                    }
+                    else
+                    {
+                        _synService.Start();
+                    }
                 }
             }
+            else
+                MessageBox.Show("Please enter settings first.");
         }
         /// <summary>
         /// Start manual Sync
@@ -96,19 +105,36 @@ namespace OutlookAddIn
             if (init == true)
             {
                 _synService.Stop();
+                autosync = false;
                 init = false;
             }
+        }
+        public void ChangeInterval(int _updateInterval)
+        {
+            if (_config.calendarName != null)
+            {
+                _confManager.SetUpdateInterval(_updateInterval);
+
+                if (init == true)
+                {                    
+                    _synService.SetInterval(_updateInterval);
+                }
+            }
+            else            
+                MessageBox.Show("Please enter settings first.");           
+
         }
         /// <summary>
         /// Reset the current Sync
         /// </summary>
         public void ResetSync()
         {
-            if (init == true)
-            {
-                _synService.Reset();
-                _confManager.SetSynced(1);
-            }
+            _calHandler.DeleteCustomCalendar();               
+            _confManager.SetSynced(0);            
+        }
+        public bool GetAutosync()
+        {
+            return autosync;
         }
     }
 }

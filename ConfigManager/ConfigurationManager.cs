@@ -17,6 +17,7 @@ namespace ConfigManager
 
         public ConfigurationManager()
         {
+            conf.updateInterval = 10000;
             FileManager fileMan = new FileManager();
             if (fileMan.LoadXML<Config>(filename) != null)
             {
@@ -51,6 +52,10 @@ namespace ConfigManager
             else
                 return null;
         }
+        public int GetUpdateInterval()
+        {
+            return conf.updateInterval;
+        }
         /// <summary>
         /// Set the synced Parameter in the config.xml
         /// </summary>
@@ -59,11 +64,23 @@ namespace ConfigManager
         {
             conf.synced = _synced;
             SaveConfig();
+            
         }
         public void SetAutoSync(byte _autosync)
         {
-            conf.autosync = _autosync;
-            SaveConfig();
+            if (conf.calendarName != null)
+            {
+                conf.autosync = _autosync;
+                SaveConfig();
+            }
+        }
+        public void SetUpdateInterval(int _updateInterval)
+        {
+            if (conf.calendarName != null)
+            {
+                conf.updateInterval = _updateInterval;
+                SaveConfig();
+            }
         }
         public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced, byte _autosync)
         {
@@ -105,7 +122,7 @@ namespace ConfigManager
         public string calendarName { get; set; }
         public string connector { get; set; }
         public string URL { get; set; }
-        public int updateInterval { get; set; }
+        public int updateInterval { get; set; } 
         public byte synced { get; set; }
         public byte autosync { get; set; }
         

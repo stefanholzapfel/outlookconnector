@@ -17,14 +17,23 @@ namespace OutlookAddIn
     {        
 
         ConfigurationManager _confManager;        
-        SyncController _syncController;         
-       
+        SyncController _syncController;
+        private int updateInterval;         
+                   
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {            
             _confManager = new ConfigurationManager();
             _syncController = new SyncController(_confManager);
-            _syncController.InitializeSync();
-            _syncController.InitializeAutoSync();              
+            _syncController.InitializeSync();            
+            updateInterval = (_confManager.GetUpdateInterval()/1000);
+            edb_interval.Text = updateInterval.ToString();
+                             
+
+            if (_syncController.GetAutosync() == true)
+            {
+                _syncController.InitializeAutoSync();
+                btn_autosync.Label = "Deactivate";
+            }
         }        
         private void btn_Settings_Click(object sender, RibbonControlEventArgs e)
         {                        
@@ -36,5 +45,37 @@ namespace OutlookAddIn
             _syncController.IntitializeManualSync();
         }
 
+        private void btn_autosync_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (_syncController.GetAutosync() == false)
+            {
+                _confManager.SetAutoSync(1);
+                _syncController.InitializeAutoSync();
+                btn_autosync.Label = "Deactivate";
+            }
+            else
+            {
+                _confManager.SetAutoSync(0);
+                _syncController.StopSync();
+                btn_autosync.Label = "Activate";
+            }
+        }
+
+        private void edb_interval_TextChanged(object sender, RibbonControlEventArgs e)
+        {
+            if (!int.TryParse(edb_interval.Text, out updateInterval))
+            {
+                MessageBox.Show("Update Interval only allows natural numbers between 10 and 3600");
+            }
+            else if ((Int32.Parse(edb_interval.Text) < 10) || (Int32.Parse(edb_interval.Text) > 3600))
+            {
+                MessageBox.Show("Update Interval only allows natural numbers between 10 and 3600");
+            }
+            else
+            {
+                updateInterval = Int32.Parse(edb_interval.Text);
+                _syncController.ChangeInterval(updateInterval*1000);
+            }
+        }
     }
 }

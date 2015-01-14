@@ -38,12 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.txt_URL = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txt_UpdateInterval = new System.Windows.Forms.TextBox();
-            this.btn_Reset = new System.Windows.Forms.Button();
             this.btn_Save = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.check_autosync = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -128,73 +123,23 @@
             this.txt_URL.Size = new System.Drawing.Size(195, 20);
             this.txt_URL.TabIndex = 9;
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(33, 161);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(80, 13);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Update Interval";
-            // 
-            // txt_UpdateInterval
-            // 
-            this.txt_UpdateInterval.Location = new System.Drawing.Point(133, 159);
-            this.txt_UpdateInterval.Name = "txt_UpdateInterval";
-            this.txt_UpdateInterval.Size = new System.Drawing.Size(82, 20);
-            this.txt_UpdateInterval.TabIndex = 12;
-            // 
-            // btn_Reset
-            // 
-            this.btn_Reset.Location = new System.Drawing.Point(133, 200);
-            this.btn_Reset.Name = "btn_Reset";
-            this.btn_Reset.Size = new System.Drawing.Size(90, 23);
-            this.btn_Reset.TabIndex = 13;
-            this.btn_Reset.Text = "Reset Sync";
-            this.btn_Reset.UseVisualStyleBackColor = true;
-            this.btn_Reset.Click += new System.EventHandler(this.btn_Reset_Click);
-            // 
             // btn_Save
             // 
-            this.btn_Save.Location = new System.Drawing.Point(238, 200);
+            this.btn_Save.Location = new System.Drawing.Point(165, 167);
             this.btn_Save.Name = "btn_Save";
             this.btn_Save.Size = new System.Drawing.Size(90, 23);
             this.btn_Save.TabIndex = 14;
-            this.btn_Save.Text = "Save";
+            this.btn_Save.Text = "Save/Reset";
             this.btn_Save.UseVisualStyleBackColor = true;
             this.btn_Save.Click += new System.EventHandler(this.btn_Save_Click);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(221, 162);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(24, 13);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "sec";
-            // 
-            // check_autosync
-            // 
-            this.check_autosync.AutoSize = true;
-            this.check_autosync.Location = new System.Drawing.Point(258, 160);
-            this.check_autosync.Name = "check_autosync";
-            this.check_autosync.Size = new System.Drawing.Size(70, 17);
-            this.check_autosync.TabIndex = 17;
-            this.check_autosync.Text = "Autosync";
-            this.check_autosync.UseVisualStyleBackColor = true;
             // 
             // ConfigManagerUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(408, 275);
-            this.Controls.Add(this.check_autosync);
-            this.Controls.Add(this.label7);
+            this.ClientSize = new System.Drawing.Size(408, 209);
             this.Controls.Add(this.btn_Save);
-            this.Controls.Add(this.btn_Reset);
-            this.Controls.Add(this.txt_UpdateInterval);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.txt_URL);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -224,11 +169,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txt_URL;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox txt_UpdateInterval;
-        private System.Windows.Forms.Button btn_Reset;
         private System.Windows.Forms.Button btn_Save;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.CheckBox check_autosync;
     }
 }
