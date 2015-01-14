@@ -31,23 +31,25 @@ namespace OutlookAddIn
         private string calendarName;
         private string connector;
         private string URL;
-        private byte synced;        
+        private byte synced;     
 
-        
         public ConfigManagerUI(ConfigurationManager _configManager, SyncController _syncController)
-        {
-            
+        {            
             InitializeComponent();
             confManager = _configManager;
             conf = confManager.GetConfig();
             syncController = _syncController;
 
+            if (syncController.GetAutosync() == true)
+            {
+                syncController.StopSync();
+            }
+
             availableConnectors = conHan.GetAvailableConnectors();                       
             foreach (var item in availableConnectors)
             {
                 cbo_Connector.Items.Add(item);
-            }
-            
+            }            
             if (conf != null)
             {                
                 userName = conf.userName;
@@ -82,13 +84,12 @@ namespace OutlookAddIn
                         connector = cbo_Connector.SelectedItem.ToString();
                         URL = txt_URL.Text;
                         synced = 0;
-                        password = txt_Password.Text;
+                        password = txt_Password.Text;                        
+                                                                    
+                        confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, conf.autosync);
+                        syncController.ResetSync(false);
                         
-                        syncController.StopSync();                                               
-                        confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, 0);
-                        syncController.ResetSync(false);                                                
                         this.Close();
-
                     }
                     else if (dialogResult == DialogResult.No)
                     {
@@ -108,6 +109,13 @@ namespace OutlookAddIn
                     syncController.ResetSync(true);
                     this.Close();                    
                 }
+            }
+        }
+        private void ConfigManagerUI_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            if (conf.autosync == 1)
+            {
+                syncController.InitializeAutoSync();
             }
         }
     }

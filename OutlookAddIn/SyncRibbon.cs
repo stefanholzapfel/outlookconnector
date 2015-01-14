@@ -20,7 +20,6 @@ namespace OutlookAddIn
         Config _config = new Config();
         SyncController _syncController;
         private int updateInterval;      
-   
                    
         private void SyncRibbon_Load(object sender, RibbonUIEventArgs e)
         {            
@@ -54,10 +53,13 @@ namespace OutlookAddIn
         private void btn_autosync_Click(object sender, RibbonControlEventArgs e)
         {
             if (_syncController.GetAutosync() == false)
-            {
-                _confManager.SetAutoSync(1);
-                _syncController.InitializeAutoSync();
-                btn_autosync.Label = "Deactivate";
+            {   
+                if (_config.calendarName != null)
+                {
+                    btn_autosync.Label = "Deactivate";
+                    _confManager.SetAutoSync(1);
+                }
+                _syncController.InitializeAutoSync();                
             }
             else
             {
@@ -82,6 +84,10 @@ namespace OutlookAddIn
                 updateInterval = Int32.Parse(edb_interval.Text);
                 _syncController.ChangeInterval(updateInterval*1000);
             }
+        }
+        public void btn_autoSync_nameChanged()
+        {
+            btn_autosync.Label = "Changed";
         }
     }
 }

@@ -152,6 +152,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ConfigManagerUI";
             this.Text = "Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConfigManagerUI_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
