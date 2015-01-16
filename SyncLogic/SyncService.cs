@@ -53,7 +53,7 @@ namespace SyncLogic
         /// </summary>
         public bool Reset()
         {
-            Debug.WriteLine("Executed Reset()");
+            Debug.WriteLine("SyncService: Executed Reset()");
 
             if (!_isRunning)
             {
@@ -77,7 +77,7 @@ namespace SyncLogic
         {
             if (_syncThread.Interval < MIN_INTERVAL) return false;
 
-            Debug.WriteLine("Service started");
+            Debug.WriteLine("SyncService: Service started");
 
             _syncThread.Start();
             _isStarted = true;
@@ -92,7 +92,7 @@ namespace SyncLogic
             _syncThread.Stop();
             _isStarted = false;
 
-            Debug.WriteLine("Service stopped");
+            Debug.WriteLine("SyncService: Service stopped");
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SyncLogic
         /// </summary>
         public void ExecuteOnce()
         {
-            Debug.WriteLine("Started ExecuteOnce()");
+            Debug.WriteLine("SyncService: Started ExecuteOnce()");
 
             if (_isStarted) _syncThread.Stop();
 
@@ -109,12 +109,12 @@ namespace SyncLogic
 
             if (_isStarted) _syncThread.Start();
 
-            Debug.WriteLine("Finished ExecuteOnce()");
+            Debug.WriteLine("SyncService: Finished ExecuteOnce()");
         }
 
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine("Started _syncThread_Elapsed()");
+            Debug.WriteLine("SyncService: Started _syncThread_Elapsed()");
             Synchronize();
         }
 
@@ -123,7 +123,8 @@ namespace SyncLogic
         /// </summary>
         private void Synchronize()
         {
-            Debug.WriteLine("Started Synchronize()");
+            Debug.WriteLine("----------------------------------");
+            Debug.WriteLine("SyncService: Started Synchronize(" + DateTime.Now + ")");
 
             // checking if another sync is already running
             if (!_isRunning)
@@ -131,8 +132,8 @@ namespace SyncLogic
                 _isRunning = true;
 
                 //Get changes since last snyc
-                AppointmentSyncCollection _outlookGetUpdates = _syncOutlook.GetUpdates();
                 AppointmentSyncCollection _externalGetUpdates = _syncExternal.GetUpdates();
+                AppointmentSyncCollection _outlookGetUpdates = _syncOutlook.GetUpdates();
 
                 //Find updating conflicts and solve them
                 List<OutlookAppointment> deleteFromOutlookCollection = new List<OutlookAppointment>();
@@ -168,14 +169,17 @@ namespace SyncLogic
 
                 //Write the changes to the destinations
                 _syncOutlook.DoUpdates(_externalGetUpdates);
+                //Debug.WriteLine("SyncService: Processed _syncOutlook.DoUpdates(_externalGetUpdates)");
+
                 _syncOutlook.UpdateSyncIDs(_syncExternal.DoUpdates(_outlookGetUpdates));
+                //Debug.WriteLine("SyncService: Processed _syncOutlook.UpdateSyncIDs()");
 
                 _isRunning = false;
             }
             else
-                Debug.WriteLine("Synchronize() not processed, it is already running");
+                Debug.WriteLine("SyncService: Synchronize() not processed, it is already running");
 
-            Debug.WriteLine("Finished Synchronize()");
+            Debug.WriteLine("SyncService: Finished Synchronize()");
         }
     }
 }

@@ -3,7 +3,9 @@ using Shared;
 using Shared.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +20,8 @@ namespace OutlookAddIn
         private Outlook.MAPIFolder _customCalendar;
         private String _calendarName;
 
+        private Outlook.Items _items;
+
         private SyncDataStorage _syncStorage;
 
         public class SyncDataStorage
@@ -27,6 +31,9 @@ namespace OutlookAddIn
         }
 
         private const String SYNCSTORAGE_FILENAME = "OutlookSyncStorage";
+        private const String ITEM_PROPERTY_GLOBAL_A_ID = "GAI";
+        private const String ITEM_PROPERTY_SYNC_ID = "SyncID";
+        private const String ITEM_PROPERTY_SYNC_UPDATE = "SyncUpdate";
 
         public String ConnectorName
         {
@@ -70,7 +77,6 @@ namespace OutlookAddIn
             if (_customCalendar != null) SetEvents();
 
             LoadLocalStorage();
-            // there is no local sync storage yet, so we start a new one
             if (_syncStorage == null) _syncStorage = new SyncDataStorage();
         }
 
@@ -113,8 +119,8 @@ namespace OutlookAddIn
                 // Set the navigation folder to be displayed in overlay mode by default. The IsSelected property can't be set to True 
                 // unless the CalendarModule object is the current module displayed in the Navigation Pane
                 objPane.CurrentModule = objPane.Modules.GetNavigationModule(Outlook.OlNavigationModuleType.olModuleCalendar);
-                //objNavFolder.IsSelected = true;
-                //objNavFolder.IsSideBySide = false;
+                objNavFolder.IsSelected = true;
+                objNavFolder.IsSideBySide = false;
 
                 SetEvents();
 
@@ -198,25 +204,41 @@ namespace OutlookAddIn
             if (_customCalendar == null) return null;
             AppointmentSyncCollection syncCollection = new AppointmentSyncCollection();
 
+            // Debug.WriteLine("CalendarHandler: TimeStamp -> " + timestamp);
+
             foreach (Outlook.AppointmentItem item in _customCalendar.Items)
             {
-                if (item.LastModificationTime > timestamp)
+                Boolean updatedBySync = false;
+
+                //Debug.WriteLine("CalendarHandler: Item (" + item.Subject + ") LastModificationTime -> " + item.LastModificationTime);
+
+                // if the date from the SYNC_UPDATE is newer or as the LastModificationTime, the item was not updated by the user
+                if (item.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE] != null && DateTime.Parse(item.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE].Value) >= item.LastModificationTime)
+                    updatedBySync = true;
+
+                //Debug.WriteLine("CalendarHandler: Item (" + item.Subject + ") SyncUpdate -> " + syncUpdate);
+                //Debug.WriteLine("CalendarHandler: Item (" + item.Subject + ") wasUpdatedBySync -> " + wasUpdatedBySync);
+
+                if (item.LastModificationTime >= timestamp && !updatedBySync)
                 {
                     // ADDING
-                    // if SyncID does not exist, it is not yet synced and needs to be added
-                    if (item.ItemProperties["SyncID"] == null)
+                    // if SyncID does not exist, it is not yet synced and needs to be added to the other calendar
+                    if (item.ItemProperties[ITEM_PROPERTY_SYNC_ID] == null)
                     {
                         syncCollection.AddList.Add(new OutlookAppointment(item));
 
-                        // GAI (GlobalAppointmentID) needs to be added as item property, otherwise it cannot be found later
-                        Outlook.ItemProperty newProp = item.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
-                        item.Save();
-                        newProp.Value = item.GlobalAppointmentID;
-                        item.Save();
+                        if (item.ItemProperties[ITEM_PROPERTY_GLOBAL_A_ID] == null)
+                        {
+                            // GAI (GlobalAppointmentID) needs to be added as item property, otherwise it cannot be found later
+                            Outlook.ItemProperty newProp = item.ItemProperties.Add(ITEM_PROPERTY_GLOBAL_A_ID, Outlook.OlUserPropertyType.olText);
+                            item.Save();
+                            newProp.Value = item.GlobalAppointmentID;
+                            item.Save();
+                        }
                     }
 
                     // UPDATING
-                    // if a SyncID exist, it is already synced and needs to be updated
+                    // if a SyncID exist, it is already synced and needs to be updated in the other calendar
                     else
                     {
                         syncCollection.UpdateList.Add(new OutlookAppointment(item));
@@ -231,6 +253,8 @@ namespace OutlookAddIn
                 item.SyncID = syncID;
                 syncCollection.DeleteList.Add(item);
             }
+
+            Debug.WriteLine("CalendarHandler: Added: " + syncCollection.AddList.Count + " | Updated: " + syncCollection.UpdateList.Count + " | Deleted: " + syncCollection.DeleteList.Count);
 
             ResetDeleteStorage();
             SetSyncTime(DateTime.Now);
@@ -274,7 +298,7 @@ namespace OutlookAddIn
                 }
             }
 
-            SetSyncTime(DateTime.Now);
+            //SetSyncTime(DateTime.Now);
             return null;
         }
 
@@ -288,17 +312,30 @@ namespace OutlookAddIn
             {
                 Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", entry.Key));
 
-                if (foundItem.ItemProperties["SyncID"] == null)
+                // updating the SyncIDs
+                if (foundItem.ItemProperties[ITEM_PROPERTY_SYNC_ID] == null)
                 {
-                    foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
+                    foundItem.ItemProperties.Add(ITEM_PROPERTY_SYNC_ID, Outlook.OlUserPropertyType.olText);
                     foundItem.Save();
                 }
 
-                foundItem.ItemProperties["SyncID"].Value = entry.Value;
+                foundItem.ItemProperties[ITEM_PROPERTY_SYNC_ID].Value = entry.Value;
                 foundItem.Save();
+
+                // updating the information, that this item was updated by the sync
+                if (foundItem.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE] == null)
+                {
+                    foundItem.ItemProperties.Add(ITEM_PROPERTY_SYNC_UPDATE, Outlook.OlUserPropertyType.olText);
+                    foundItem.Save();
+                }
+
+                foundItem.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE].Value = foundItem.LastModificationTime;
+                foundItem.Save();
+
+                Marshal.ReleaseComObject(foundItem);
+                foundItem = null;
             }
 
-            SetSyncTime(DateTime.Now);
         }
 
         /// <summary>
@@ -328,13 +365,15 @@ namespace OutlookAddIn
             newAppointment.Importance = Outlook.OlImportance.olImportanceNormal;
 
             // GlobalAppointmentID must be stored as custom item property as well, because GlobalAppointmentID property cannot be searched for
-            newAppointment.ItemProperties.Add("GAI", Outlook.OlUserPropertyType.olText);
-            newAppointment.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
+            newAppointment.ItemProperties.Add(ITEM_PROPERTY_GLOBAL_A_ID, Outlook.OlUserPropertyType.olText);
+            newAppointment.ItemProperties.Add(ITEM_PROPERTY_SYNC_ID, Outlook.OlUserPropertyType.olText);
+            newAppointment.ItemProperties.Add(ITEM_PROPERTY_SYNC_UPDATE, Outlook.OlUserPropertyType.olText);
 
             newAppointment.Save();
 
-            newAppointment.ItemProperties["GAI"].Value = newAppointment.GlobalAppointmentID;
-            newAppointment.ItemProperties["SyncID"].Value = appointment.SyncID;
+            newAppointment.ItemProperties[ITEM_PROPERTY_GLOBAL_A_ID].Value = newAppointment.GlobalAppointmentID;
+            newAppointment.ItemProperties[ITEM_PROPERTY_SYNC_ID].Value = appointment.SyncID;
+            newAppointment.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE].Value = newAppointment.LastModificationTime;
 
             newAppointment.Save();
 
@@ -405,20 +444,32 @@ namespace OutlookAddIn
                 foundItem.Duration = appointment.Duration;
                 //foundItem.Importance = appointment.Importance;
 
-                if (foundItem.ItemProperties["SyncID"] == null)
-                    foundItem.ItemProperties.Add("SyncID", Outlook.OlUserPropertyType.olText);
+                if (foundItem.ItemProperties[ITEM_PROPERTY_SYNC_ID] == null)
+                {
+                    foundItem.ItemProperties.Add(ITEM_PROPERTY_SYNC_ID, Outlook.OlUserPropertyType.olText);
+                    foundItem.Save();
+                }
 
+                foundItem.ItemProperties[ITEM_PROPERTY_SYNC_ID].Value = appointment.SyncID;
                 foundItem.Save();
 
-                foundItem.ItemProperties["SyncID"].Value = appointment.SyncID;
+                // updating the information, that this item was updated by the sync
+                if (foundItem.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE] == null)
+                {
+                    foundItem.ItemProperties.Add(ITEM_PROPERTY_SYNC_UPDATE, Outlook.OlUserPropertyType.olText);
+                    foundItem.Save();
+                }
 
+                foundItem.ItemProperties[ITEM_PROPERTY_SYNC_UPDATE].Value = foundItem.LastModificationTime;
                 foundItem.Save();
+
+                Marshal.ReleaseComObject(foundItem);
+                foundItem = null;
 
                 return true;
             }
 
             // couldn't find the appointment
-            // TODO: adding as new?
             return false;
         }
 
@@ -438,8 +489,8 @@ namespace OutlookAddIn
         private void AddItemToDeleteStorage(Outlook.AppointmentItem item)
         {
             // only synced items need to be remembered
-            if (item != null && item.ItemProperties["SyncID"] != null)
-                _syncStorage.DeletedItems.Add(item.ItemProperties["SyncID"].Value);
+            if (item != null && item.ItemProperties[ITEM_PROPERTY_SYNC_ID] != null)
+                _syncStorage.DeletedItems.Add(item.ItemProperties[ITEM_PROPERTY_SYNC_ID].Value);
 
             SaveToLocalStorage();
         }
@@ -479,13 +530,36 @@ namespace OutlookAddIn
             if (_customCalendar == null) return;
 
             Outlook.Folder eventsFolder = (Outlook.Folder)_customCalendar;
-            eventsFolder.BeforeItemMove += events_BeforeItemMove;
+            eventsFolder.BeforeItemMove += new Outlook.MAPIFolderEvents_12_BeforeItemMoveEventHandler(Events_BeforeItemMove);
+
+            _items = eventsFolder.Items;
+            _items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(Items_ItemAdd);
+        }
+
+        /// <summary>
+        /// Executed when a new item is added to the calendar folder, and is adding additional parameters to it
+        /// </summary>
+        /// <param name="Item"></param>
+        private void Items_ItemAdd(object Item)
+        {
+            Outlook.AppointmentItem item = Item as Outlook.AppointmentItem;
+
+            //Debug.WriteLine("CalendarHandler: Items_ItemAdd fired for '" + item.Subject + "'");
+
+            // GAI (GlobalAppointmentID) needs to be added as item property, otherwise it cannot be found later
+            Outlook.ItemProperty newPropGAI = item.ItemProperties.Add(ITEM_PROPERTY_GLOBAL_A_ID, Outlook.OlUserPropertyType.olText);
+            item.Save();
+            newPropGAI.Value = item.GlobalAppointmentID;
+            item.Save();
+
+            Marshal.ReleaseComObject(item);
+            item = null;
         }
 
         /// <summary>
         /// Executed before an item is moved within Outlook, and checks if the item is deleted (moved to Trash)
         /// </summary>
-        private void events_BeforeItemMove(object Item, Outlook.MAPIFolder MoveTo, ref bool Cancel)
+        private void Events_BeforeItemMove(object Item, Outlook.MAPIFolder MoveTo, ref bool Cancel)
         {
             Outlook.AppointmentItem item = Item as Outlook.AppointmentItem;
             Outlook.MAPIFolder deletedFolder = (Outlook.MAPIFolder)_outlookApp.ActiveExplorer().Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDeletedItems);
