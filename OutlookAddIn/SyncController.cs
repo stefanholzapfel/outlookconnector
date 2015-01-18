@@ -128,10 +128,7 @@ namespace OutlookAddIn
             {
                 _calHandler.DeleteCustomCalendar();
             }
-            if (init == false)
-            {
-                InitializeSync();
-            }
+            InitializeSync();
             _synService.Reset();
             _confManager.SetSynced(1);
         }
