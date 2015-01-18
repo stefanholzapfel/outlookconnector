@@ -10,8 +10,8 @@ namespace ConfigManager
 {
     public class FileManager
     {
-        
         private static string path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData)+@"\Microsoft\Outlook\OutlookConnector\";
+
         /// <summary>
         /// XML Serializer to save a generic object.
         /// </summary>
@@ -29,10 +29,6 @@ namespace ConfigManager
 
         }
 
-        private void CreateDictionary()
-        {
-            throw new NotImplementedException();
-        }
         /// <summary>
         /// XML Serializer to load a generic object.
         /// </summary>

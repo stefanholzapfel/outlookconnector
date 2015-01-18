@@ -15,15 +15,21 @@ namespace ConfigManager
         private static byte[] entropy = { 5, 19, 22, 8, 16, 27, 35, 65, 91 };
         private static string filename = @"config";
 
+        /// <summary>
+        /// minimum interval time
+        /// </summary>
+        public const int MIN_INTERVAL = 10000;
+
         public ConfigurationManager()
         {
-            conf.updateInterval = 10000;
+            conf.updateInterval = MIN_INTERVAL;
             FileManager fileMan = new FileManager();
             if (fileMan.LoadXML<Config>(filename) != null)
             {
                 conf = fileMan.LoadXML<Config>(filename);
             }
         }
+
         /// <summary>
         /// Get the current configuration without encrypted password.
         /// To get decrypted password use GetPassword method.
@@ -38,6 +44,7 @@ namespace ConfigManager
             else
                 return null;
         }
+
         /// <summary>
         /// Get the current password.
         /// </summary>
@@ -52,10 +59,12 @@ namespace ConfigManager
             else
                 return null;
         }
+
         public int GetUpdateInterval()
         {
             return conf.updateInterval;
         }
+
         /// <summary>
         /// Set the synced Parameter in the config.xml
         /// </summary>
@@ -64,8 +73,9 @@ namespace ConfigManager
         {
             conf.synced = _synced;
             SaveConfig();
-            
+
         }
+
         public void SetAutoSync(byte _autosync)
         {
             if (conf.calendarName != null)
@@ -74,6 +84,7 @@ namespace ConfigManager
                 SaveConfig();
             }
         }
+
         public void SetUpdateInterval(int _updateInterval)
         {
             if (conf.calendarName != null)
@@ -82,6 +93,7 @@ namespace ConfigManager
                 SaveConfig();
             }
         }
+
         public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced, byte _autosync)
         {
 
@@ -95,12 +107,14 @@ namespace ConfigManager
             conf.autosync = _autosync;
             SaveConfig();
         }
+
         public void SaveConfig()
         {
             FileManager fileMan = new FileManager();
-            fileMan.SaveXML(conf, filename);        
-          
-        }        
+            fileMan.SaveXML(conf, filename);
+
+        }
+
         public static byte[] Protect(byte[] data)
         {
             try
@@ -114,7 +128,8 @@ namespace ConfigManager
                 return null;
             }
         }
-    }   
+    }
+
     public class Config
     {
         public string userName { get; set; }
@@ -122,9 +137,8 @@ namespace ConfigManager
         public string calendarName { get; set; }
         public string connector { get; set; }
         public string URL { get; set; }
-        public int updateInterval { get; set; } 
+        public int updateInterval { get; set; }
         public byte synced { get; set; }
         public byte autosync { get; set; }
-        
     }
 }
