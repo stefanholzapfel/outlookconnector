@@ -8,8 +8,8 @@ using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using Shared;
-using SyncLogic;
-using ConfigManager;
+using OutlookAddIn;
+using OutlookAddIn;
 
 namespace OutlookAddIn
 {

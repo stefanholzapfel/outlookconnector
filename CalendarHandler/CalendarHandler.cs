@@ -1,4 +1,4 @@
-﻿using ConfigManager;
+﻿using OutlookAddIn;
 using Shared;
 using Shared.Interfaces;
 using System;

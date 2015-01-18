@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace SyncLogic
+namespace OutlookAddIn
 {
     public class SyncService
     {

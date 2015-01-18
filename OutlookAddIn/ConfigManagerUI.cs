@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ConfigManager;
+using OutlookAddIn;
 using System.ComponentModel.Composition.Hosting;
-using SyncLogic;
+using OutlookAddIn;
 using Shared;
 
 namespace OutlookAddIn
