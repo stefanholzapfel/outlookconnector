@@ -11,8 +11,18 @@ namespace CaldavConnector.Utilities
     {
         public static String Parse(OutlookAppointment _appointment) {
             String querystring = "";
-            String starttimestamp = _appointment.Start.ToString(@"yyyyMMdd\THHmmss");
-            String endtimestamp = _appointment.End.ToString(@"yyyyMMdd\THHmmss");
+            String starttimestamp;
+            String endtimestamp;
+            if (_appointment.AllDayEvent)
+            {
+                starttimestamp = ";VALUE=DATE:" + _appointment.Start.ToString(@"yyyyMMdd");
+                endtimestamp = ";VALUE=DATE:" + _appointment.End.ToString(@"yyyyMMdd");
+            }
+            else
+            {
+                starttimestamp = ";VALUE=DATE-TIME:" + _appointment.Start.ToString(@"yyyyMMdd\THHmmss");
+                endtimestamp = ";VALUE=DATE-TIME:" + _appointment.End.ToString(@"yyyyMMdd\THHmmss");
+            }
             String lastmodified = DateTime.Now.ToString(@"yyyyMMdd\THHmmss");
 
             querystring += "BEGIN:VCALENDAR\n";
@@ -23,9 +33,9 @@ namespace CaldavConnector.Utilities
             if (_appointment.Subject != null && !_appointment.Subject.Equals(""))
             querystring += "SUMMARY:" + _appointment.Subject + "\n";
             if (starttimestamp != null && !starttimestamp.Equals(""))
-            querystring += "DTSTART:" + starttimestamp + "\n";
+            querystring += "DTSTART" + starttimestamp + "\n";
             if (endtimestamp != null && !endtimestamp.Equals(""))
-            querystring += "DTEND:" + endtimestamp + "\n";
+            querystring += "DTEND" + endtimestamp + "\n";
             if (_appointment.Location != null && !_appointment.Location.Equals(""))
             querystring += "LOCATION:" + _appointment.Location + "\n";
             if (_appointment.Body != null && !_appointment.Body.Equals(""))
