@@ -17,6 +17,12 @@ namespace Shared.Interfaces
         ConnectorSettings Settings { set; }
 
         /// <summary>
+        /// Checks weather the connector can connect with the given parameters, if not it returns:
+        /// </summary>
+        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen, 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
+        int CheckConnectivity(String connector, String url, String username, String password);
+        
+        /// <summary>
         /// returns the full calendar
         /// </summary>
         /// <returns>appointments that have been added/updated/deleted in the respective collection of the AppointmentSyncCollection</returns>

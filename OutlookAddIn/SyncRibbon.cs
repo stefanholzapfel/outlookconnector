@@ -60,7 +60,7 @@ namespace OutlookAddIn
                 }
                 _syncController.InitializeAutoSync();                
             }
-            else
+            else if (_syncController.GetAutosync() == true)
             {
                 _confManager.SetAutoSync(0);
                 _syncController.StopSync();

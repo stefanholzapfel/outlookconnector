@@ -42,6 +42,15 @@ namespace OutlookAddIn
                 init = true;
             }             
         }
+
+        public Boolean CheckConnectivity(String connector, String url, String username, String password)
+        {
+            if (_connHandler.CheckConnectivity(connector, url, username, password) == 0)
+                return true;
+            else
+                return false;
+        }
+
         /// <summary>
         /// Start Autosync
         /// </summary>

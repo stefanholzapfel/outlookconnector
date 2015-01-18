@@ -47,6 +47,15 @@ namespace OutlookAddIn
         }
 
         /// <summary>
+        /// Part of the interface but not needed on Outlook side. Always returns 0 (OK)
+        /// </summary>
+        /// <returns></returns>
+        public int CheckConnectivity(String connector, String url, String username, String password)
+        {
+            return 0;
+        }
+
+        /// <summary>
         /// Initializes the CalendarHandler
         /// </summary>
         /// <param name="outlookApp">reference to the active Outlook application</param>

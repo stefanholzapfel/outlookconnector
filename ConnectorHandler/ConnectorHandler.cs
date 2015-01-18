@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OutlookAddIn
 {
@@ -29,6 +30,21 @@ namespace OutlookAddIn
             var catalog = new DirectoryCatalog(path);
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
+        }
+
+        /// <summary>
+        /// Checks weather the connector can connect, if not it returns:
+        /// </summary>
+        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen, 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
+        public int CheckConnectivity(String connector, String url, String username, String password)
+        {
+            foreach (var item in MefCalendarConnectors)
+            {
+                if (item.GetType().Name.Equals(connector))
+                    return item.CheckConnectivity(connector, url, username, password);
+            }
+            MessageBox.Show("Error: No connector choosen!");
+            return 1;
         }
 
         /// <summary>

@@ -14,6 +14,7 @@ using CaldavConnector.Converter;
 using CaldavConnector.Utilities;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Net.Sockets;
 
 namespace CaldavConnector
 {
@@ -50,6 +51,53 @@ namespace CaldavConnector
         public string ConnectorName
         {
             get { return _name; }
+        }
+
+        /// <summary>
+        /// Checks weather the connector can connect, if not it returns:
+        /// </summary>
+        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen (not checked here), 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
+        public int CheckConnectivity(String _connector, String _url, String _username, String _password)
+        {
+            System.IO.Stream ResponseStream;
+            HttpWebRequest CaldavRequest;
+            WebHeaderCollection headers = new WebHeaderCollection();
+            headers.Add("Depth", "0");
+            headers.Add("Prefer", "return-minimal");
+            string query = "<d:propfind xmlns:d=\"DAV:\">" +
+                                "<d:prop>" +
+                                "</d:prop>" +
+                            "</d:propfind>";
+            try
+            {
+                CaldavRequest = (HttpWebRequest)WebRequest.Create(CheckSlashAtEnd(_url));
+                CaldavRequest.Method = "PROPFIND";
+                CaldavRequest.Credentials = new NetworkCredential(_username, _password);
+                CaldavRequest.PreAuthenticate = true;
+                CaldavRequest.Headers = headers;
+                CaldavRequest.ContentType = "application/xml";
+                byte[] optionsArray = Encoding.UTF8.GetBytes(query);
+                CaldavRequest.ContentLength = optionsArray.Length;
+                System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
+                requestStream.Write(optionsArray, 0, optionsArray.Length);
+                requestStream.Close();
+                HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
+                ResponseStream = ReportResponse.GetResponseStream();
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException is WebException || e.InnerException is SocketException)
+                {
+                    MessageBox.Show("The URL is incorrect or not reachable!");
+                    return 2;
+                }
+                else
+                {
+                    MessageBox.Show("The following error occurred: " + e.Message);
+                    return 4;
+                }
+            }
+            return 0;
         }
 
         /// <summary>
@@ -252,33 +300,41 @@ namespace CaldavConnector
         private XmlDocument QueryCaldavServer(String requestMethod, WebHeaderCollection headers, String query, String contentType, String url)
         {
             System.IO.Stream ResponseStream;
-            System.Xml.XmlDocument ResponseXmlDoc;
+            System.Xml.XmlDocument ResponseXmlDoc = new XmlDocument();
             HttpWebRequest CaldavRequest;
-            if (url == null)
-                CaldavRequest = (HttpWebRequest)WebRequest.Create(calendarUrl);
-            else
+            try
             {
-                string[] url_parts = url.Split(new Char[] { '\\', '/' });
-                string url_corrected = calendarUrl + url_parts.Last();
-                CaldavRequest = (HttpWebRequest)WebRequest.Create(url_corrected);
+                if (url == null)
+                    CaldavRequest = (HttpWebRequest)WebRequest.Create(calendarUrl);
+                else
+                {
+                    string[] url_parts = url.Split(new Char[] { '\\', '/' });
+                    string url_corrected = calendarUrl + url_parts.Last();
+                    CaldavRequest = (HttpWebRequest)WebRequest.Create(url_corrected);
+                }
+                CaldavRequest.Method = requestMethod;
+                CaldavRequest.Credentials = new NetworkCredential(username, password);
+                CaldavRequest.PreAuthenticate = true;
+                CaldavRequest.Headers = headers;
+                if (contentType != null)
+                    CaldavRequest.ContentType = contentType;
+                byte[] optionsArray = Encoding.UTF8.GetBytes(query);
+                CaldavRequest.ContentLength = optionsArray.Length;
+                System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
+                requestStream.Write(optionsArray, 0, optionsArray.Length);
+                requestStream.Close();
+                HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
+                ResponseStream = ReportResponse.GetResponseStream();
+                if (!requestMethod.Equals("DELETE") && !requestMethod.Equals("PUT"))
+                {
+                    ResponseXmlDoc.Load(ResponseStream);
+                }
             }
-            CaldavRequest.Method = requestMethod;
-            CaldavRequest.Credentials = new NetworkCredential(username, password);
-            CaldavRequest.PreAuthenticate = true;
-            CaldavRequest.Headers = headers;
-            if (contentType != null)
-                CaldavRequest.ContentType = contentType;
-            byte[] optionsArray = Encoding.UTF8.GetBytes(query);
-            CaldavRequest.ContentLength = optionsArray.Length;
-            System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
-            requestStream.Write(optionsArray, 0, optionsArray.Length);
-            requestStream.Close();
-            HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
-            ResponseStream = ReportResponse.GetResponseStream();
-            ResponseXmlDoc = new XmlDocument();
-            if (!requestMethod.Equals("DELETE") && !requestMethod.Equals("PUT"))
+            catch (Exception e)
             {
-                ResponseXmlDoc.Load(ResponseStream);
+                Debug.WriteLine(e.Message);
+                MessageBox.Show("The following error occurred: " + e.Message);
+                return ResponseXmlDoc;
             }
             return ResponseXmlDoc;
         }
