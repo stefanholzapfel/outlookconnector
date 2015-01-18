@@ -195,7 +195,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Returns a AppointmentSyncCollection, with all updates since the last request
+        /// Returns an AppointmentSyncCollection, with all updates since the last request
         /// </summary>
         /// <returns></returns>
         public AppointmentSyncCollection GetUpdates()
@@ -263,7 +263,7 @@ namespace OutlookAddIn
                 syncCollection.DeleteList.Add(item);
             }
 
-            Debug.WriteLine("CalendarHandler: Added: " + syncCollection.AddList.Count + " | Updated: " + syncCollection.UpdateList.Count + " | Deleted: " + syncCollection.DeleteList.Count);
+            Debug.WriteLine("CalendarHandler (GetUpdates): Added: " + syncCollection.AddList.Count + " | Updated: " + syncCollection.UpdateList.Count + " | Deleted: " + syncCollection.DeleteList.Count);
 
             ResetDeleteStorage();
             SetSyncTime(DateTime.Now);
@@ -307,7 +307,8 @@ namespace OutlookAddIn
                 }
             }
 
-            //SetSyncTime(DateTime.Now);
+            Debug.WriteLine("CalendarHandler (DoUpdates): Added: " + syncItems.AddList.Count + " | Updated: " + syncItems.UpdateList.Count + " | Deleted: " + syncItems.DeleteList.Count);
+
             return null;
         }
 
@@ -513,17 +514,28 @@ namespace OutlookAddIn
             SaveToLocalStorage();
         }
 
+        /// <summary>
+        /// Gets the last synchronization time
+        /// </summary>
+        /// <returns></returns>
         private DateTime GetLastSyncTime()
         {
             return _syncStorage.LastSyncTime;
         }
 
-        private void SetSyncTime(DateTime time)
+        /// <summary>
+        /// Sets the synchronization timer
+        /// </summary>
+        /// <param name="time"></param>
+        public void SetSyncTime(DateTime time)
         {
             _syncStorage.LastSyncTime = time;
             SaveToLocalStorage();
         }
 
+        /// <summary>
+        /// Resets the synchronization timer
+        /// </summary>
         private void ResetSyncTime()
         {
             _syncStorage.LastSyncTime = DateTime.MinValue;

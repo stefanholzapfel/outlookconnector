@@ -62,6 +62,7 @@ namespace SyncLogic
                 _syncOutlook.DeleteCustomCalendar();
                 _syncOutlook.CreateCustomCalendar();
                 _syncOutlook.DoUpdates(_syncExternal.GetInitialSync());
+                _syncOutlook.SetSyncTime(DateTime.Now);
 
                 _isRunning = false;
             }
@@ -81,6 +82,10 @@ namespace SyncLogic
 
             _syncThread.Start();
             _isStarted = true;
+
+            // since the timer will wait for one interval until running for the first time, we start it manually once right now
+            Synchronize();
+
             return true;
         }
 
@@ -112,6 +117,11 @@ namespace SyncLogic
             Debug.WriteLine("SyncService: Finished ExecuteOnce()");
         }
 
+        /// <summary>
+        /// Executed by the timer after an interval elapsed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _syncThread_Elapsed(object sender, ElapsedEventArgs e)
         {
             Debug.WriteLine("SyncService: Started _syncThread_Elapsed()");
