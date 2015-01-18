@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OutlookAddIn;
-using OutlookAddIn;
 using Shared;
 using System.Windows.Forms;
 

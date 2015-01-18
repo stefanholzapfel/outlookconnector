@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OutlookAddIn;
 using System.ComponentModel.Composition.Hosting;
-using OutlookAddIn;
 using Shared;
 
 namespace OutlookAddIn

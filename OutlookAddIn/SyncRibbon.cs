@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using Microsoft.Office.Tools.Ribbon;
 using Shared;
 using OutlookAddIn;
-using OutlookAddIn;
 
 namespace OutlookAddIn
 {
