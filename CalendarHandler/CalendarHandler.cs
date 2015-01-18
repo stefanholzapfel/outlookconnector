@@ -410,7 +410,7 @@ namespace OutlookAddIn
         {
             if (_customCalendar == null || String.IsNullOrEmpty(syncID)) return false;
 
-            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[SyncID] = '{0}'", syncID));
+            Outlook.AppointmentItem foundItem = _customCalendar.Items.Find(String.Format("[" + ITEM_PROPERTY_SYNC_ID + "] = '{0}'", syncID));
             if (foundItem != null)
             {
                 foundItem.Delete();
@@ -432,10 +432,10 @@ namespace OutlookAddIn
             if (_customCalendar == null || appointment == null) return false;
             Outlook.AppointmentItem foundItem;
 
-            foundItem = _customCalendar.Items.Find(String.Format("[SyncID] = '{0}'", appointment.SyncID));
+            foundItem = _customCalendar.Items.Find(String.Format("[" + ITEM_PROPERTY_SYNC_ID + "] = '{0}'", appointment.SyncID));
 
             if (foundItem == null)
-                foundItem = _customCalendar.Items.Find(String.Format("[GAI] = '{0}'", appointment.GlobalAppointmentID));
+                foundItem = _customCalendar.Items.Find(String.Format("[" + ITEM_PROPERTY_GLOBAL_A_ID + "] = '{0}'", appointment.GlobalAppointmentID));
 
             if (foundItem != null)
             {
