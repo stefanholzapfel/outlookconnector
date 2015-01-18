@@ -33,6 +33,7 @@ namespace OutlookAddIn
         private byte synced;
 
         private bool newSettings = true;
+
         public ConfigManagerUI(ConfigurationManager _configManager, SyncController _syncController)
         {            
             InitializeComponent();
@@ -66,11 +67,12 @@ namespace OutlookAddIn
                 txt_Password.Text = password;                
             }           
         }
+
         private void btn_Save_Click(object sender, EventArgs e)            
         {
             if (txt_Username.Text == "" || txt_CalendarName.Text == "" || txt_Password.Text == "" || txt_URL.Text == "" || cbo_Connector.SelectedItem == null)
             {
-                MessageBox.Show("Please fill out all forms");
+                MessageBox.Show("Please fill in all form fields", "Change settings");
             }
             else if (!syncController.CheckConnectivity(cbo_Connector.SelectedItem.ToString(), txt_URL.Text, txt_Username.Text, txt_Password.Text))
             {
@@ -78,7 +80,7 @@ namespace OutlookAddIn
             } else {
                 if (calendarName != null)
                 {
-                    DialogResult dialogResult = MessageBox.Show("Do you really want to change these settings? This will automatically reset the synchronization.", "Change Settings", MessageBoxButtons.YesNo);
+                    DialogResult dialogResult = MessageBox.Show("Do you really want to change these settings? This will automatically reset the synchronization.", "Change settings", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         userName = txt_Username.Text;
@@ -90,7 +92,7 @@ namespace OutlookAddIn
                                                                     
                         confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, conf.autosync);
                         newSettings = false;
-                        btn_Save.Text = "In Progress...";
+                        btn_Save.Text = "In progress ...";
                         btn_Save.Enabled = false;
                         backgroundWorker1.RunWorkerAsync();
                         
@@ -111,12 +113,13 @@ namespace OutlookAddIn
 
                     confManager.SetConfig(userName, password, calendarName, connector, URL, conf.updateInterval, synced, 0);
                     newSettings = true;
-                    btn_Save.Text = "In Progress...";
+                    btn_Save.Text = "In progress...";
                     btn_Save.Enabled = false;
                     backgroundWorker1.RunWorkerAsync();            
                 }
             }
         }
+
         private void ConfigManagerUI_FormClosing(Object sender, FormClosingEventArgs e)
         {
             if (conf.autosync == 1)
