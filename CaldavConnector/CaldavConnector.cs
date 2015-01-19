@@ -65,51 +65,71 @@ namespace CaldavConnector
             get { return _name; }
         }
 
+        const int CONNECTOR_STATUS_OK = 0;
+        const int CONNECTOR_STATUS_ERR_NO_CONNECTOR = 1;
+        const int CONNECTOR_STATUS_ERR_INVALID_URL = 2;
+        const int CONNECTOR_STATUS_ERR_INVALID_CREDS = 3;
+        const int CONNECTOR_STATUS_ERR_UNKNOWN = 4;
+
         /// <summary>
         /// Checks weather the connector can connect, if not it returns a status code as integer.
         /// </summary>
-        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen (not checked here), 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
+        /// <returns>Int: 0=Connectivity ok, 1=No connector chosen (not checked here), 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
         public int CheckConnectivity(String _connector, String _url, String _username, String _password)
         {
-            System.IO.Stream ResponseStream;
             HttpWebRequest CaldavRequest;
-            WebHeaderCollection headers = new WebHeaderCollection();
-            headers.Add("Depth", "0");
-            headers.Add("Prefer", "return-minimal");
-            string query = "<d:propfind xmlns:d=\"DAV:\">" +
-                                "<d:prop>" +
-                                "</d:prop>" +
-                            "</d:propfind>";
+            HttpWebResponse CaldavResponse;
+
+            if (!IsValidUrl(_url))
+            {
+                MessageBox.Show("Error while connecting to calendar: Wrong url.");
+                return CONNECTOR_STATUS_ERR_INVALID_URL;
+            }
+
             try
             {
                 CaldavRequest = (HttpWebRequest)WebRequest.Create(CheckSlashAtEnd(_url));
-                CaldavRequest.Method = "PROPFIND";
+                //CaldavRequest.Method = "GET";
                 CaldavRequest.Credentials = new NetworkCredential(_username, _password);
                 CaldavRequest.PreAuthenticate = true;
-                CaldavRequest.Headers = headers;
-                CaldavRequest.ContentType = "application/xml";
-                byte[] optionsArray = Encoding.UTF8.GetBytes(query);
-                CaldavRequest.ContentLength = optionsArray.Length;
-                System.IO.Stream requestStream = CaldavRequest.GetRequestStream();
-                requestStream.Write(optionsArray, 0, optionsArray.Length);
-                requestStream.Close();
-                HttpWebResponse ReportResponse = (HttpWebResponse)CaldavRequest.GetResponse();
-                ResponseStream = ReportResponse.GetResponseStream();
+                CaldavResponse = (HttpWebResponse) CaldavRequest.GetResponse();
+                
             }
-            catch (Exception e)
+            catch (WebException WebEx)
             {
-                if (e.InnerException is WebException || e.InnerException is SocketException)
+                if (WebEx.Status == WebExceptionStatus.ProtocolError)
                 {
-                    MessageBox.Show("The URL is incorrect or not reachable!");
-                    return 2;
+                    var response = WebEx.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        switch (response.StatusCode)
+                        {
+                            case HttpStatusCode.OK:
+                                return CONNECTOR_STATUS_OK;
+                            case HttpStatusCode.Forbidden:
+                            case HttpStatusCode.Unauthorized:
+                                MessageBox.Show("Error while connecting to calendar: Wrong credentials.");
+                                return CONNECTOR_STATUS_ERR_INVALID_CREDS;
+                            case HttpStatusCode.NotFound:
+                            case HttpStatusCode.NotImplemented:
+                            case HttpStatusCode.MethodNotAllowed:
+                                MessageBox.Show("Error while connecting to calendar: Wrong url.");
+                                return CONNECTOR_STATUS_ERR_INVALID_URL;
+                            default:
+                                MessageBox.Show("Error while connecting to calendar: An unknown error occured.");
+                                return CONNECTOR_STATUS_ERR_UNKNOWN;
+                        }
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("The following error occurred: " + e.Message);
-                    return 4;
-                }
+                MessageBox.Show("Error while connecting to calendar: Wrong url.");
+                return CONNECTOR_STATUS_ERR_INVALID_URL;
             }
-            return 0;
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error while connecting to calendar: An unknown error occured - " + ex.Message);
+                return CONNECTOR_STATUS_ERR_UNKNOWN;
+            }
+            return CONNECTOR_STATUS_OK;
         }
 
         /// <summary>
@@ -356,7 +376,7 @@ namespace CaldavConnector
         /// </summary>
         /// <param name="url">Url to check.</param>
         /// <returns>Corrected url.</returns>
-        private String CheckSlashAtEnd(String url)
+        private static String CheckSlashAtEnd(String url)
         {
             if (url.Length > 0)
             {
@@ -365,6 +385,20 @@ namespace CaldavConnector
                     return url + "/";
             }
             return url;
+        }
+
+        /// <summary>
+        /// Checks if given URL is a valid URL
+        /// </summary>
+        /// <param name="urlString">Url to check</param>
+        /// <returns>boolean</returns>
+        private static bool IsValidUrl(string urlString)
+        {
+            Uri uri;
+            return Uri.TryCreate(urlString, UriKind.Absolute, out uri)
+                && (uri.Scheme == Uri.UriSchemeHttp
+                 || uri.Scheme == Uri.UriSchemeHttps
+                 );
         }
     }
 }
