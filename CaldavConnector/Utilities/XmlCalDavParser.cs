@@ -38,7 +38,7 @@ namespace CaldavConnector.Utilities
                             if (specificParameter[0].ToUpper().StartsWith("UID") && specificParameter[1] != null) myElement.Guid = specificParameter[1];
                             if (specificParameter[0].ToUpper().StartsWith("SUMMARY") && specificParameter[1] != null) myElement.Summary = specificParameter[1];
                             if (specificParameter[0].ToUpper().StartsWith("DESCRIPTION") && specificParameter[1] != null) myElement.Description = specificParameter[1];
-                            if (specificParameter[0].ToUpper().StartsWith("LAST-MODIFIED") && specificParameter[1] != null) myElement.LastModified = StringToDateTimeConverter.Convert(specificParameter[1]);
+                            if (specificParameter[0].ToUpper().StartsWith("LAST-MODIFIED") && specificParameter[1] != null) myElement.LastModified = StringToDateTimeConverter.Convert(specificParameter[1], CaldavConnector.LASTMODIFIED_DATE_OFFSET);
                             if (specificParameter[0].ToUpper().StartsWith("LOCATION") && specificParameter[1] != null) myElement.Location = specificParameter[1];
                             if (specificParameter[0].ToUpper().StartsWith("DTSTART") && specificParameter[1] != null)
                             {

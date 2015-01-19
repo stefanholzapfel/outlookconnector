@@ -32,6 +32,10 @@ namespace CaldavConnector
         private String password;
         private String calendarUrl;
 
+        /// <summary>
+        /// offset for lastmodified date (owncloud has some serious problems with lastmodified date ... )
+        /// </summary>
+        public static int LASTMODIFIED_DATE_OFFSET = 1;
 
         /// <summary>
         /// The standard constructor to instantiate a new CaldavConnector. No settings set-up so far.
@@ -65,11 +69,11 @@ namespace CaldavConnector
             get { return _name; }
         }
 
-        const int CONNECTOR_STATUS_OK = 0;
-        const int CONNECTOR_STATUS_ERR_NO_CONNECTOR = 1;
-        const int CONNECTOR_STATUS_ERR_INVALID_URL = 2;
-        const int CONNECTOR_STATUS_ERR_INVALID_CREDS = 3;
-        const int CONNECTOR_STATUS_ERR_UNKNOWN = 4;
+        public static int CONNECTOR_STATUS_OK = 0;
+        public static int CONNECTOR_STATUS_ERR_NO_CONNECTOR = 1;
+        public static int CONNECTOR_STATUS_ERR_INVALID_URL = 2;
+        public static int CONNECTOR_STATUS_ERR_INVALID_CREDS = 3;
+        public static int CONNECTOR_STATUS_ERR_UNKNOWN = 4;
 
         /// <summary>
         /// Checks weather the connector can connect, if not it returns a status code as integer.
