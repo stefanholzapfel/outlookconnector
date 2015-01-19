@@ -42,6 +42,18 @@ namespace CaldavConnector.Converter
 
             return (DateTime?)null;
         }
+
+        /// <summary>
+        /// Does the convertion from String to DateTime.
+        /// </summary>
+        /// <param name="value">String to convert.</param>
+        /// <param name="hOffset">Hour offset</param>
+        /// <returns>Converted DateTime.</returns>
+        public static DateTime? Convert(this string value, int hOffset)
+        {
+            return Convert(value).Value.AddHours(hOffset);
+        }
+
         private static int? ToInt(this string input)
         {
             int ret;
