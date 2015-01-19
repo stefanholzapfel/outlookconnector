@@ -7,8 +7,16 @@ using System.Threading.Tasks;
 
 namespace CaldavConnector.Utilities
 {
+    /// <summary>
+    /// A helper class that parses an Outlook appointment into XML for a CalDav request.
+    /// </summary>
     public static class AppointmentItemXmlParser
     {
+        /// <summary>
+        /// Parses an Outlook appointment into XML for a CalDav request.
+        /// </summary>
+        /// <param name="_appointment">The OutlookAppointment to parse.</param>
+        /// <returns>The XML string to use for CalDav request.</returns>
         public static String Parse(OutlookAppointment _appointment) {
             String querystring = "";
             String starttimestamp;

@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace CaldavConnector.Converter
 {
+
+    /// <summary>
+    /// This helper class converts a String into a DateTime.
+    /// </summary>
     public static class StringToDateTimeConverter
     {
         private static Regex rxDate = new Regex(@"(\d{4})(\d{2})(\d{2})T?(\d{2}?)(\d{2}?)(\d{2}?)(Z?)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary>
+        /// Does the convertion from String to DateTime.
+        /// </summary>
+        /// <param name="value">String to convert.</param>
+        /// <returns>Converted DateTime.</returns>
         public static DateTime? Convert(this string value)
         {
             if (string.IsNullOrEmpty(value))

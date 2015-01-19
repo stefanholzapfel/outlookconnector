@@ -12,6 +12,9 @@ using System.Timers;
 
 namespace OutlookAddIn
 {
+    /// <summary>
+    /// The sync service provides all necessary methods and the logic to control the sync activities between the connector and the Outlook calendar.
+    /// </summary>
     public class SyncService
     {
         private CalendarHandler _syncOutlook;
@@ -25,6 +28,12 @@ namespace OutlookAddIn
         /// </summary>
         public const double MIN_INTERVAL = 10000;
 
+        /// <summary>
+        /// This constructer is needed to instantiate an new SyncService with a given CalendarHandler, a remote connector and a sync interval.
+        /// </summary>
+        /// <param name="syncOutlook">The Outlook calendar handler to use for sync operations.</param>
+        /// <param name="syncExternal">The remote connector to use for sync operations.</param>
+        /// <param name="interval">The interval to use for auto sync.</param>
         public SyncService(CalendarHandler syncOutlook, ICalendarSyncable syncExternal, double interval)
         {
             this._syncOutlook = syncOutlook;
@@ -36,10 +45,10 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Sets the interval for the repeating synchronization
+        /// Sets the interval for the repeating synchronization.
         /// </summary>
-        /// <param name="interval">interval in milliseconds</param>
-        /// <returns>true if the interval is within allowed range</returns>
+        /// <param name="interval">Interval in milliseconds.</param>
+        /// <returns>True if the interval is within allowed range.</returns>
         public bool SetInterval(double interval)
         {
             if (interval < MIN_INTERVAL) return false;
@@ -49,7 +58,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Resets the outlook calendar, pulls a new copy from the external calendar and adds it to outlook calendar.
+        /// Resets the Outlook calendar, pulls a new copy from the external calendar and adds it to the Outlook calendar.
         /// </summary>
         public bool Reset()
         {
@@ -71,9 +80,9 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Starts the continuous synchronization
+        /// Starts the continuous synchronization.
         /// </summary>
-        /// <returns>true if starting was successful</returns>
+        /// <returns>True if starting was successful.</returns>
         public bool Start()
         {
             if (_syncThread.Interval < MIN_INTERVAL) return false;
@@ -90,7 +99,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Stops the synchronization
+        /// Stops the continuous synchronization.
         /// </summary>
         public void Stop()
         {
@@ -101,7 +110,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Executes the synchronization once
+        /// Executes the synchronization once.
         /// </summary>
         public void ExecuteOnce()
         {
@@ -118,7 +127,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Executed by the timer after an interval elapsed
+        /// Executed by the timer after an interval elapsed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -129,7 +138,7 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Synchronizes both calendars
+        /// Synchronizes both calendars.
         /// </summary>
         private void Synchronize()
         {

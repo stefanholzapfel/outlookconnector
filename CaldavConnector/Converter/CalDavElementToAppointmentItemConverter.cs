@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace CaldavConnector.Converter
 {
+    /// <summary>
+    /// This helper class converts a CalDavElement into an OutlookAppointment.
+    /// </summary>
     public static class CalDavElementToAppointmentItemConverter
     {
+        /// <summary>
+        /// Does the convertion from CalDavElement into OutlookAppointment.
+        /// </summary>
+        /// <param name="_myElement">CalDavElement to convert.</param>
+        /// <returns>Converted OutlookAppointment.</returns>
         public static OutlookAppointment Convert(CalDavElement _myElement)
         {
             OutlookAppointment _myAppointment = new OutlookAppointment();
@@ -21,11 +29,6 @@ namespace CaldavConnector.Converter
             _myAppointment.Location = _myElement.Location;
             _myAppointment.LastModificationTime = (DateTime)_myElement.LastModified;
             _myAppointment.AllDayEvent = _myElement.AllDayEvent;
-
-            //_myAppointment.ReminderSet = appointment.ReminderSet;
-            //_myAppointment.ReminderMinutesBeforeStart = appointment.ReminderMinutesBeforeStart;
-            //_myAppointment.Duration = appointment.Duration;
-            //_myAppointment.Importance = appointment.Importance;
 
             return _myAppointment;
         }

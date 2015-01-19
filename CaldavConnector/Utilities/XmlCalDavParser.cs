@@ -9,11 +9,14 @@ using System.Xml;
 
 namespace CaldavConnector.Utilities
 {
+    /// <summary>
+    /// A helper class that parses a CalDav response XML into a list of CalDav elements.
+    /// </summary>
     public static class XmlCalDavParser
     {
 
         /// <summary>
-        /// Parses a CalDav response XML into a List of CalDavElements.
+        /// Parses a CalDav response XML into a list of CalDavElements.
         /// </summary>
         /// <param name="ResponseXmlDoc">XML to parse.</param>
         /// <returns>All CalDavElements contained in the Xml.</returns>

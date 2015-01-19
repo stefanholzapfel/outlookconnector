@@ -18,6 +18,10 @@ using System.Net.Sockets;
 
 namespace CaldavConnector
 {
+
+    /// <summary>
+    /// A connector class that is capable of connecting and syncing with a CalDav server. To be used with a MEF implementation of the ICalendarSyncable interface.
+    /// </summary>
     [Export(typeof(ICalendarSyncable))]
     public class CaldavConnector : ICalendarSyncable
     {
@@ -28,6 +32,10 @@ namespace CaldavConnector
         private String password;
         private String calendarUrl;
 
+
+        /// <summary>
+        /// The standard constructor to instantiate a new CaldavConnector. No settings set-up so far.
+        /// </summary>
         public CaldavConnector()
         {
             //Deactivate certificate validation
@@ -35,6 +43,10 @@ namespace CaldavConnector
             _localStorage = new LocalStorageProvider();
         }
 
+
+        /// <summary>
+        /// Property that allows to define the connectors settings such as the username, the password and the URL of the remote server.
+        /// </summary>
         public ConnectorSettings Settings
         {
             set {
@@ -54,7 +66,7 @@ namespace CaldavConnector
         }
 
         /// <summary>
-        /// Checks weather the connector can connect, if not it returns:
+        /// Checks weather the connector can connect, if not it returns a status code as integer.
         /// </summary>
         /// <returns>Int: 0=Connectivity ok, 1=No connector choosen (not checked here), 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
         public int CheckConnectivity(String _connector, String _url, String _username, String _password)
@@ -174,10 +186,10 @@ namespace CaldavConnector
         }
 
         /// <summary>
-        /// Writes the items added, updated and deleted in Outlook back to the server
+        /// Writes the items added, updated and deleted in Outlook back to the server.
         /// </summary>
-        /// <param name="syncItems">A collection with all new, updated and deleted items on Outlooks side.</param>
-        /// <returns>The servers SyncIDs for items newly added in Outlook</returns>
+        /// <param name="syncItems">A collection with all new, updated and deleted items on Outlook side.</param>
+        /// <returns>The servers SyncIDs for items newly added in Outlook as dictionary.</returns>
         public Dictionary<string, string> DoUpdates(AppointmentSyncCollection syncItems)
         {
             Dictionary<string, string> newSyncIds = new Dictionary<string, string>();
@@ -242,8 +254,8 @@ namespace CaldavConnector
         /// <summary>
         /// Returns the CalDavElement from server with the provided relative url on the server.
         /// </summary>
-        /// <param name="url">relative Url to concrete .ics</param>
-        /// <returns>Found CalDavElement</returns>
+        /// <param name="url">Relative Url to concrete .ics.</param>
+        /// <returns>Found CalDavElement.</returns>
         private CalDavElement GetSingleItemFromServer(String url)
         {
             WebHeaderCollection headers = new WebHeaderCollection();
@@ -263,9 +275,9 @@ namespace CaldavConnector
         }
 
         /// <summary>
-        /// Returns all CalDavElements from server with full details
+        /// Returns all CalDavElements from server with full details.
         /// </summary>
-        /// <returns>List with all CalDavElements with full details</returns>
+        /// <returns>List with all CalDavElements with full details.</returns>
         private List<CalDavElement> GetAllItemsFromServer()
         {
             WebHeaderCollection headers = new WebHeaderCollection();
@@ -291,11 +303,11 @@ namespace CaldavConnector
         /// <summary>
         /// Helper method to query a CalDav server.
         /// </summary>
-        /// <param name="requestMethod"></param>
-        /// <param name="headers"></param>
-        /// <param name="query"></param>
-        /// <param name="contentType"></param>
-        /// <param name="url">If null the settings url is used (for REPORT), if provided the settings url is combined with the path to concrete .ics (for PUT and DELETE)</param>
+        /// <param name="requestMethod">Request mehtod to use for query.</param>
+        /// <param name="headers">Headers to include into query.</param>
+        /// <param name="query">The query itseld.</param>
+        /// <param name="contentType">The content type to use for query.</param>
+        /// <param name="url">For a REPORT request just provide NULL and the calendar URL form the settings will be used. For PUT and DELETE requests provide the relative url to the element or just its name (including .ics) and it will be combined with the settings path.</param>
         /// <returns></returns>
         private XmlDocument QueryCaldavServer(String requestMethod, WebHeaderCollection headers, String query, String contentType, String url)
         {
@@ -342,8 +354,8 @@ namespace CaldavConnector
         /// <summary>
         /// Checks if a given url ends with "/" and if not corrects it.
         /// </summary>
-        /// <param name="url">Url to check</param>
-        /// <returns>Corrected url</returns>
+        /// <param name="url">Url to check.</param>
+        /// <returns>Corrected url.</returns>
         private String CheckSlashAtEnd(String url)
         {
             if (url.Length > 0)

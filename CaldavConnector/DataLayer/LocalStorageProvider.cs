@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace CaldavConnector.DataLayer
 {
+
+    /// <summary>
+    /// This class handles the local cache of the remote CalDav server.
+    /// </summary>
     public class LocalStorageProvider
     {
         private static String filepath = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Microsoft\Outlook\OutlookConnector\Data\CalDavConnectorCache.sqlite";
@@ -46,7 +50,7 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Search the database for an ETag relating to a given GUID.
+        /// Searches the database for an ETag relating to a given GUID.
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <param name="guid">The Guid to look up.</param>
@@ -62,7 +66,7 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Search the database for an url relating to a given GUID.
+        /// Searches the database for an url relating to a given GUID.
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <param name="guid">The Guid to look up.</param>
@@ -79,7 +83,7 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Return all current entries of the database.
+        /// Returns all current entries of the database.
         /// EFFICIENT - No SQL statements executed!
         /// </summary>
         /// <returns>Dictionary of all entries</returns>
@@ -90,10 +94,10 @@ namespace CaldavConnector.DataLayer
 
 
         /// <summary>
-        /// Edit the ETag of an existing entry.
+        /// Edits the ETag of an existing entry.
         /// </summary>
         /// <param name="guid">Guid of entry to edit.</param>
-        /// <param name="eTag">New value for ETag</param>
+        /// <param name="eTag">New value for ETag.</param>
         public void EditETag(String guid, String eTag) {
             if (localCache.ContainsKey(guid))
             {
@@ -103,7 +107,7 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Add a new entry to the database if Guid is not already
+        /// Adds a new entry to the database if Guid is not already
         /// present.
         /// </summary>
         /// <param name="guid">Guid to add.</param>
@@ -118,7 +122,7 @@ namespace CaldavConnector.DataLayer
         }
 
         /// <summary>
-        /// Delete an entry from the database if it exists.
+        /// Deletes an entry from the database if it exists.
         /// </summary>
         /// <param name="guid">Guid to delete.</param>
         public void DeleteEntry(String guid) {

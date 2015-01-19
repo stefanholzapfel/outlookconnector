@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace OutlookAddIn
 {
+    /// <summary>
+    /// The connector handler is the component responsible for selecting the correct connector and redirecting the receiving method calls to it. Therefore the MEF framework is used.
+    /// </summary>
     public class ConnectorHandler : ICalendarSyncable
 
     {
@@ -33,9 +36,13 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Checks weather the connector can connect, if not it returns:
+        /// Checks whether the connector can connect with the provided credentials, it returns a status code as integer.
         /// </summary>
-        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen, 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other error</returns>
+        /// <param name="connector">Name of the connector to use for connection test.</param>
+        /// <param name="url">URL of the remote server to test.</param>
+        /// <param name="username">The username to test.</param>
+        /// <param name="password">The password to test.</param>
+        /// <returns>Int: 0=Connectivity ok, 1=No connector choosen, 2=Invalid/unreachable URL, 3=Incorrect username/password, 4=Other errors</returns>
         public int CheckConnectivity(String connector, String url, String username, String password)
         {
             foreach (var item in MefCalendarConnectors)
@@ -48,10 +55,9 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Return all available connectors
+        /// Return the names of all available connectors.
         /// </summary>
-        /// <param name="timestamp"></param>
-        /// <returns>List with the names of all available connectors</returns>
+        /// <returns>List with the names of all available connectors.</returns>
         public List<String> GetAvailableConnectors()
         {
             List<String> availableConnectors = new List<String>();
@@ -63,9 +69,9 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Choose a connector to use for sync methods
+        /// Choose a connector to use for sync methods.
         /// </summary>
-        /// <param name="_choosenConnector">Name of connector to choose</param>
+        /// <param name="_choosenConnector">Name of connector to choose.</param>
         public void ChooseConnector(String _choosenConnector)
         {
             choosenConnector = _choosenConnector;
@@ -74,8 +80,7 @@ namespace OutlookAddIn
         /// <summary>
         /// Selects the choosen connector and executes its GetUpdates(DateTime timestamp) method with choosen connector.
         /// </summary>
-        /// <param name="timestamp"></param>
-        /// <returns></returns>
+        /// <returns>Returns all items on remote server as part of the "add"list in an AppointmentSyncCollection.</returns>
         public Shared.AppointmentSyncCollection GetInitialSync()
         {
             foreach (var item in MefCalendarConnectors)
@@ -87,9 +92,9 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Selects the choosen connector and executes its GetUpdates() method with choosen connector.
+        /// Executes the GetUpdates() method of the choosen connector.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Forwards the returned AppointmentSyncCollection of the called connector method.</returns>
         public Shared.AppointmentSyncCollection GetUpdates()
         {
             foreach (var item in MefCalendarConnectors)
@@ -101,9 +106,9 @@ namespace OutlookAddIn
         }
 
         /// <summary>
-        /// Selects the choosen connector and executes its DoUpdates(AppointmentSyncCollection syncItems) method with choosen connector.
+        /// Executes the DoUpdates(AppointmentSyncCollection syncItems) method of the choosen connector.
         /// </summary>
-        /// <param name="syncItems"></param>
+        /// <param name="syncItems">Forwards the returned Dictionary<string, string> of the called connector method.</param>
         public Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
         {
             foreach (var item in MefCalendarConnectors)
