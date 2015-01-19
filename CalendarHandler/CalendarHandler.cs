@@ -133,11 +133,15 @@ namespace OutlookAddIn
                 Outlook.NavigationGroup objGroup = objModule.NavigationGroups.GetDefaultNavigationGroup(Outlook.OlGroupType.olMyFoldersGroup);
                 Outlook.NavigationFolder objNavFolder = objGroup.NavigationFolders.Add(_customCalendar);
 
-                // Set the navigation folder to be displayed in overlay mode by default. The IsSelected property can't be set to True 
-                // unless the CalendarModule object is the current module displayed in the Navigation Pane
+                // Set the navigation folder to be displayed in overlay mode by default
                 objPane.CurrentModule = objPane.Modules.GetNavigationModule(Outlook.OlNavigationModuleType.olModuleCalendar);
-                objNavFolder.IsSelected = true;
-                objNavFolder.IsSideBySide = false;
+
+                if (objPane.CurrentModule == objPane.Modules.GetNavigationModule(Outlook.OlNavigationModuleType.olModuleCalendar))
+                {
+                    // The IsSelected property can't be set to True unless the CalendarModule object is the current module displayed in the Navigation Pane
+                    objNavFolder.IsSelected = true;
+                    objNavFolder.IsSideBySide = false;
+                }
 
                 SetEvents();
 
