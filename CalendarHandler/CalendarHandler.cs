@@ -13,6 +13,9 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace OutlookAddIn
 {
+    /// <summary>
+    /// This class provides all the logic to interact with an Outlook calendar
+    /// </summary>
     public class CalendarHandler : ICalendarSyncable
     {
         private Outlook.Application _outlookApp;
@@ -21,9 +24,11 @@ namespace OutlookAddIn
         private String _calendarName;
 
         private Outlook.Items _items;
-
         private SyncDataStorage _syncStorage;
 
+        /// <summary>
+        /// Local data storage for synchronization data
+        /// </summary>
         public class SyncDataStorage
         {
             public List<String> DeletedItems = new List<string>();
@@ -35,6 +40,9 @@ namespace OutlookAddIn
         private const String ITEM_PROPERTY_SYNC_ID = "SyncID";
         private const String ITEM_PROPERTY_SYNC_UPDATE = "SyncUpdate";
 
+        /// <summary>
+        /// Name of this connector / calendar
+        /// </summary>
         public String ConnectorName
         {
             get { return _calendarName; }

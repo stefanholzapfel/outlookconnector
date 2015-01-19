@@ -12,8 +12,14 @@ namespace Shared.Interfaces
     public interface ICalendarSyncable
     {
 
+        /// <summary>
+        /// Name of the connector
+        /// </summary>
         String ConnectorName { get; }
 
+        /// <summary>
+        /// All settings to connect
+        /// </summary>
         ConnectorSettings Settings { set; }
 
         /// <summary>

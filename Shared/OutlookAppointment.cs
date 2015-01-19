@@ -8,21 +8,43 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Shared
 {
+    /// <summary>
+    /// Custom appointment which holds all data which can be communicated between calendars
+    /// </summary>
     public class OutlookAppointment
     {
         #region Properties
 
+        /// <summary>
+        /// Unique identifier for the synchronization logic, defined by the primary server calendar
+        /// </summary>
         public String SyncID { get; set; }
 
+        /// <summary>
+        /// Appointment ID set by Outlook
+        /// </summary>
         public String GlobalAppointmentID { get; set; }
 
+        /// <summary>
+        /// Subject of the appointment
+        /// </summary>
         public String Subject { get; set; }
 
+        /// <summary>
+        /// Body and content of the appointment
+        /// </summary>
         public String Body { get; set; }
 
+        /// <summary>
+        /// Start date and time
+        /// </summary>
         public DateTime Start { get; set; }
 
         private DateTime _end;
+
+        /// <summary>
+        /// End date and time
+        /// </summary>
         public DateTime End
         {
             get { return _end; }
@@ -37,16 +59,29 @@ namespace Shared
             }
         }
 
+        /// <summary>
+        /// Location of the appointment
+        /// </summary>
         public String Location { get; set; }
 
+        /// <summary>
+        /// If this is an all-day event
+        /// </summary>
         public bool AllDayEvent { get; set; }
 
         private int _duration;
+
+        /// <summary>
+        /// Duration of the appointment in minutes
+        /// </summary>
         public int Duration
         {
             get { return _duration; }
         }
 
+        /// <summary>
+        /// Date and time of the last modification
+        /// </summary>
         public DateTime LastModificationTime { get; set; }
 
         //public Object RTFBody { get; set; }

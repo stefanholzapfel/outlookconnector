@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Shared
 {
+    /// <summary>
+    /// This class holds all collections for adding, deleting and updating appointments between the calendars
+    /// </summary>
     public class AppointmentSyncCollection
     {
         /// <summary>
@@ -23,6 +26,9 @@ namespace Shared
         /// </summary>
         public List<OutlookAppointment> DeleteList { get; set; }
 
+        /// <summary>
+        /// Instantiates all collections
+        /// </summary>
         public AppointmentSyncCollection()
         {
             AddList = new List<OutlookAppointment>();
