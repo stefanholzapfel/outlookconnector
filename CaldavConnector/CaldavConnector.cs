@@ -35,7 +35,7 @@ namespace CaldavConnector
         /// <summary>
         /// offset for lastmodified date (owncloud has some serious problems with lastmodified date ... )
         /// </summary>
-        public static int LASTMODIFIED_DATE_OFFSET = 1;
+        public static int LASTMODIFIED_DATE_OFFSET = -1;
 
         /// <summary>
         /// The standard constructor to instantiate a new CaldavConnector. No settings set-up so far.

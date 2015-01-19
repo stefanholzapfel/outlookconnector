@@ -33,7 +33,7 @@ namespace CaldavConnector.Utilities
                 endtimestamp = ";VALUE=DATE-TIME:" + _appointment.End.ToString(@"yyyyMMdd\THHmmss");
             }
 
-            String lastmodified = DateTime.Now.AddHours(-CaldavConnector.LASTMODIFIED_DATE_OFFSET).ToString(@"yyyyMMdd\THHmmss");
+            String lastmodified = DateTime.Now.AddHours(CaldavConnector.LASTMODIFIED_DATE_OFFSET).ToString(@"yyyyMMdd\THHmmss");
 
             querystring += "BEGIN:VCALENDAR\n";
             querystring += "VERSION:2.0\n";
