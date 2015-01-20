@@ -7,6 +7,9 @@ using System.Security.Cryptography;
 
 namespace OutlookAddIn
 {
+    /// <summary>
+    /// The ConfigurationManager class provides everything necessary to save, load and update a configuration
+    /// </summary>
     public class ConfigurationManager
     {
         Config conf = new Config();
@@ -19,6 +22,9 @@ namespace OutlookAddIn
         /// </summary>
         public const int MIN_INTERVAL = 10000;
 
+        /// <summary>
+        /// Instantiates a new FileManager and loads the config.xml if it exists
+        /// </summary>
         public ConfigurationManager()
         {
             conf.updateInterval = MIN_INTERVAL;
@@ -28,7 +34,6 @@ namespace OutlookAddIn
                 conf = fileMan.LoadXML<Config>(filename);
             }
         }
-
         /// <summary>
         /// Get the current configuration without encrypted password.
         /// To get decrypted password use GetPassword method.
@@ -43,7 +48,6 @@ namespace OutlookAddIn
             else
                 return null;
         }
-
         /// <summary>
         /// Get the current password.
         /// </summary>
@@ -58,12 +62,14 @@ namespace OutlookAddIn
             else
                 return null;
         }
-
+        /// <summary>
+        /// Returns the current Update Interval
+        /// </summary>
+        /// <returns>Returns the current Update Interval</returns>
         public int GetUpdateInterval()
         {
             return conf.updateInterval;
         }
-
         /// <summary>
         /// Set the synced Parameter in the config.xml
         /// </summary>
@@ -72,9 +78,11 @@ namespace OutlookAddIn
         {
             conf.synced = _synced;
             SaveConfig();
-
         }
-
+        /// <summary>
+        /// Sets the autosync parameter in the configuration and saves it
+        /// </summary>
+        /// <param name="_autosync">Autosync 0 = off, 1 = on</param>
         public void SetAutoSync(byte _autosync)
         {
             if (conf.calendarName != null)
@@ -83,7 +91,10 @@ namespace OutlookAddIn
                 SaveConfig();
             }
         }
-
+        /// <summary>
+        /// Updates the update interval in the current configuration and saves it
+        /// </summary>
+        /// <param name="_updateInterval">Update Interval</param>
         public void SetUpdateInterval(int _updateInterval)
         {
             if (conf.calendarName != null)
@@ -92,10 +103,19 @@ namespace OutlookAddIn
                 SaveConfig();
             }
         }
-
+        /// <summary>
+        /// Sets the config variables
+        /// </summary>
+        /// <param name="_userName">Username</param>
+        /// <param name="_password">Password</param>
+        /// <param name="_claendarName">Calendar Name</param>
+        /// <param name="_connector">Connector Name</param>
+        /// <param name="_URL">URL</param>
+        /// <param name="_updateInterval">Update Interval</param>
+        /// <param name="_synced">Alreday synced 0 = no, 1 = yes</param>
+        /// <param name="_autosync">Autosync 0 = off, 1 = on</param>
         public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced, byte _autosync)
         {
-
             conf.userName = _userName;
             conf.password = Protect(Encoding.UTF8.GetBytes(_password));
             conf.calendarName = _claendarName;
@@ -106,14 +126,19 @@ namespace OutlookAddIn
             conf.autosync = _autosync;
             SaveConfig();
         }
-
+        /// <summary>
+        /// This method uses the FileManager save method to save the current configuration
+        /// </summary>
         public void SaveConfig()
         {
             FileManager fileMan = new FileManager();
             fileMan.SaveXML(conf, filename);
-
         }
-
+        /// <summary>
+        /// This method encrypts a byte array
+        /// </summary>
+        /// <param name="data">Needs a byte array, which should be encrypted</param>
+        /// <returns>Returns an encrypted byte array or null if encryption wasn't possible</returns>
         public static byte[] Protect(byte[] data)
         {
             try
@@ -128,7 +153,9 @@ namespace OutlookAddIn
             }
         }
     }
-
+    /// <summary>
+    /// The Config class creates an object with all the information for the sync. The password in this class is normaly encrypted.
+    /// </summary>
     public class Config
     {
         public string userName { get; set; }

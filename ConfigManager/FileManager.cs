@@ -8,6 +8,9 @@ using System.Xml.Serialization;
 
 namespace OutlookAddIn
 {
+    /// <summary>
+    /// The FileManager class can save or load a generic XML File
+    /// </summary>
     public class FileManager
     {
         private static string path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData)+@"\Microsoft\Outlook\OutlookConnector\";

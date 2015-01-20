@@ -14,8 +14,7 @@ using Shared;
 namespace OutlookAddIn
 {
     public partial class ConfigManagerUI : Form
-    {
-        
+    {        
         ConfigurationManager confManager;
         Config conf = new Config();
 
@@ -67,7 +66,6 @@ namespace OutlookAddIn
                 txt_Password.Text = password;                
             }           
         }
-
         private void btn_Save_Click(object sender, EventArgs e)            
         {
             if (txt_Username.Text == "" || txt_CalendarName.Text == "" || txt_Password.Text == "" || txt_URL.Text == "" || cbo_Connector.SelectedItem == null)
@@ -119,7 +117,6 @@ namespace OutlookAddIn
                 }
             }
         }
-
         private void ConfigManagerUI_FormClosing(Object sender, FormClosingEventArgs e)
         {
             if (conf.autosync == 1)
@@ -132,7 +129,6 @@ namespace OutlookAddIn
         {
             syncController.ResetSync(newSettings);
         }
-
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.Close();
