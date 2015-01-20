@@ -47,6 +47,7 @@ namespace CaldavConnector.DataLayer
             SQLiteConnection.CreateFile(filepath);
             myConnection = new SQLiteConnection("Data Source=" + filepath + ";Version=3;");
             ExecuteNonQuery("CREATE TABLE localETagCache (Guid VARCHAR(100), ETag VARCHAR(100), Url VARCHAR(255))");
+            localCache.Clear();
         }
 
         /// <summary>
