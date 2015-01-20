@@ -20,7 +20,7 @@ namespace OutlookAddIn
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj">Any object you want to save as xml</param>
-        /// <param name="Filename">Filename of the xml.</param>
+        /// <param name="filename">Filename of the xml.</param>
         public void SaveXML<T>(T obj, string filename)
         {
             Directory.CreateDirectory(path);            
@@ -36,7 +36,7 @@ namespace OutlookAddIn
         /// XML Serializer to load a generic object.
         /// </summary>
         /// <typeparam name="T">Any object you want to from an xml file.</typeparam>
-        /// <param name="Filename">Filename of the xml.</param>
+        /// <param name="filename">Filename of the xml.</param>
         /// <returns>Returns any spezified object with the xml data.</returns>
         public T LoadXML<T>(string filename)
         {

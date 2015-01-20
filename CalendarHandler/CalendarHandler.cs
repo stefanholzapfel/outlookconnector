@@ -31,7 +31,14 @@ namespace OutlookAddIn
         /// </summary>
         public class SyncDataStorage
         {
+            /// <summary>
+            /// List of all deleted items, which still need to be synced
+            /// </summary>
             public List<String> DeletedItems = new List<string>();
+
+            /// <summary>
+            /// Date and time of the last synchronization
+            /// </summary>
             public DateTime LastSyncTime = DateTime.MinValue;
         }
 
@@ -48,6 +55,9 @@ namespace OutlookAddIn
             get { return _calendarName; }
         }
 
+        /// <summary>
+        /// Settings of this connector (in this case there are none)
+        /// </summary>
         public ConnectorSettings Settings
         {
             // the interface to Outlook does not require this
@@ -67,6 +77,7 @@ namespace OutlookAddIn
         /// Initializes the CalendarHandler
         /// </summary>
         /// <param name="outlookApp">reference to the active Outlook application</param>
+        /// <param name="calendarName">Name for the calendar</param>
         public CalendarHandler(Outlook.Application outlookApp, String calendarName)
         {
             this._outlookApp = outlookApp;

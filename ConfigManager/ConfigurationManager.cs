@@ -112,7 +112,7 @@ namespace OutlookAddIn
         /// <param name="_connector">Connector Name</param>
         /// <param name="_URL">URL</param>
         /// <param name="_updateInterval">Update Interval</param>
-        /// <param name="_synced">Alreday synced 0 = no, 1 = yes</param>
+        /// <param name="_synced">Already synced 0 = no, 1 = yes</param>
         /// <param name="_autosync">Autosync 0 = off, 1 = on</param>
         public void SetConfig(string _userName, string _password, string _claendarName, string _connector, string _URL, int _updateInterval, byte _synced, byte _autosync)
         {
@@ -158,13 +158,44 @@ namespace OutlookAddIn
     /// </summary>
     public class Config
     {
+        /// <summary>
+        /// Username for the connection
+        /// </summary>
         public string userName { get; set; }
+
+        /// <summary>
+        /// Password for the connection (should be encrypted)
+        /// </summary>
         public byte[] password { get; set; }
+
+        /// <summary>
+        /// Name of the calendar in Outlook
+        /// </summary>
         public string calendarName { get; set; }
+
+        /// <summary>
+        /// Namer of the connector
+        /// </summary>
         public string connector { get; set; }
+
+        /// <summary>
+        /// URL for the connection
+        /// </summary>
         public string URL { get; set; }
+
+        /// <summary>
+        /// Interval for the synchronization (in milliseconds)
+        /// </summary>
         public int updateInterval { get; set; }
+
+        /// <summary>
+        /// Already synced 0 = no, 1 = yes
+        /// </summary>
         public byte synced { get; set; }
+
+        /// <summary>
+        /// Autosync 0 = off, 1 = on
+        /// </summary>
         public byte autosync { get; set; }
     }
 }

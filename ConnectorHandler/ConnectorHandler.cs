@@ -19,6 +19,10 @@ namespace OutlookAddIn
     {
         private String choosenConnector;
         private String path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Microsoft\Outlook\OutlookConnector\Connectors";
+
+        /// <summary>
+        /// List of all available connectors
+        /// </summary>
         [ImportMany(typeof(ICalendarSyncable))]
         public List<ICalendarSyncable> MefCalendarConnectors { get; set; }
 
@@ -108,7 +112,7 @@ namespace OutlookAddIn
         /// <summary>
         /// Executes the DoUpdates(AppointmentSyncCollection syncItems) method of the choosen connector.
         /// </summary>
-        /// <param name="syncItems">Forwards the returned Dictionary<string, string> of the called connector method.</param>
+        /// <param name="syncItems">Forwards the returned Dictionary (string, string) of the called connector method.</param>
         public Dictionary<string, string> DoUpdates(Shared.AppointmentSyncCollection syncItems)
         {
             foreach (var item in MefCalendarConnectors)
@@ -119,11 +123,17 @@ namespace OutlookAddIn
             return null;
         }
 
+        /// <summary>
+        /// Name of the connector
+        /// </summary>
         public string ConnectorName
         {
             get { return choosenConnector; }
         }
 
+        /// <summary>
+        /// Connector settings
+        /// </summary>
         public Shared.ConnectorSettings Settings
         {
             set {
